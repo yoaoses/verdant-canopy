@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Canopy · Arquitectura</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:#0e1208;--surface:#151a0e;--surface2:#1c2414;--border:#2a3520;
+    --green:#7ec850;--green-dim:#1e2f10;--green-bright:#a8e070;
+    --amber:#c8a040;--amber-dim:#2a2010;--teal:#50c8a8;--teal-dim:#0e2820;
+    --red:#e05050;--red-dim:#2a1010;--blue:#5090e0;--blue-dim:#101828;
+    --purple:#9070d0;--purple-dim:#181028;
+    --text:#d8e8c8;--text-mid:#8a9e78;--text-dim:#4a5a3a;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.7;}
+
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.4;}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(14,18,8,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-brand{display:flex;align-items:baseline;gap:10px;}
+  .nav-name{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--green-bright);letter-spacing:-0.5px;}
+  .nav-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
+  .nav-links{display:flex;gap:28px;list-style:none;}
+  .nav-links a{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-mid);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--green);}
+
+  .page{max-width:1000px;margin:0 auto;padding:56px 40px 100px;}
+
+  .hero{margin-bottom:56px;}
+  .hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:4px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+  .hero-eyebrow::before{content:'';display:inline-block;width:24px;height:1px;background:var(--green);}
+  .hero h1{font-family:'Fraunces',serif;font-size:42px;font-weight:900;line-height:1.1;margin-bottom:12px;letter-spacing:-1px;}
+  .hero h1 em{font-style:italic;color:var(--green-bright);}
+  .hero p{color:var(--text-mid);font-size:15px;max-width:560px;}
+
+  .section{margin-bottom:56px;}
+  .section-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:3px;}
+  .section-title{font-family:'Fraunces',serif;font-size:22px;font-weight:600;}
+  .section-line{flex:1;height:1px;background:var(--border);}
+
+  /* MAIN DIAGRAM */
+  .diagram{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:36px;position:relative;overflow:hidden;}
+  .diagram::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(126,200,80,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(126,200,80,0.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+
+  .diag-layer{margin-bottom:6px;}
+  .diag-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .diag-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .diag-nodes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+
+  .diag-node{border:1px solid;border-radius:6px;padding:12px 16px;font-size:12px;text-align:center;min-width:110px;cursor:pointer;transition:all 0.2s;position:relative;}
+  .diag-node:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+  .diag-node .n-name{font-weight:500;font-size:13px;margin-bottom:2px;}
+  .diag-node .n-sub{font-size:10px;opacity:0.65;font-family:'DM Mono',monospace;}
+
+  .n-edge   {border-color:var(--teal);background:var(--teal-dim);color:var(--teal);}
+  .n-hub    {border-color:var(--amber);background:var(--amber-dim);color:var(--amber);}
+  .n-cloud  {border-color:var(--blue);background:var(--blue-dim);color:var(--blue);}
+  .n-ui     {border-color:var(--purple);background:var(--purple-dim);color:var(--purple);}
+
+  .diag-connector{display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 8px;}
+  .conn-line{flex:1;max-width:100px;height:1px;background:var(--border);}
+  .conn-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:1px;padding:2px 10px;border:1px solid var(--border);border-radius:20px;}
+
+  /* DETAIL */
+  .detail-panel{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:16px 20px;margin-top:20px;display:none;animation:fadeIn 0.2s ease;}
+  .detail-panel.visible{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .detail-title{font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-bottom:6px;}
+  .detail-body{font-size:13px;color:var(--text-mid);line-height:1.8;}
+  .detail-body strong{color:var(--text);}
+
+  /* LEGEND */
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-mid);}
+  .legend-dot{width:10px;height:10px;border-radius:2px;border:1px solid;}
+
+  /* FLOW */
+  .flow{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px;}
+  .flow-step{display:flex;gap:16px;margin-bottom:0;}
+  .flow-left{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;}
+  .flow-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;border:1px solid var(--border);color:var(--text-mid);background:var(--surface2);z-index:1;}
+  .flow-vline{flex:1;width:1px;background:var(--border);min-height:20px;margin-top:4px;}
+  .flow-content{flex:1;padding-bottom:24px;}
+  .flow-title{font-weight:600;font-size:14px;margin-bottom:3px;margin-top:4px;}
+  .flow-desc{font-size:13px;color:var(--text-mid);}
+  .flow-code{font-family:'DM Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 12px;margin-top:8px;color:var(--green);line-height:1.8;}
+
+  /* MODES */
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .mode-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:18px;}
+  .mode-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-bottom:4px;}
+  .mode-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+  .mode-steps{list-style:none;font-size:12px;color:var(--text-mid);}
+  .mode-steps li{padding:4px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;}
+  .mode-steps li:last-child{border-bottom:none;}
+  .mode-steps li::before{content:'→';color:var(--text-dim);}
+
+  footer{border-top:1px solid var(--border);padding:24px 40px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1px;}
+  footer a{color:var(--green);text-decoration:none;}
+
+  @media(max-width:600px){.page{padding:24px 20px 60px;}.nav-links{display:none;}.modes{grid-template-columns:1fr;}.hero h1{font-size:28px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <span class="nav-name">Verdant Canopy</span>
+    <span class="nav-sub">docs</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="verdant-checkpoint.html">Checkpoint</a></li>
+    <li><a href="#" class="active">Arquitectura</a></li>
+    <li><a href="verdant-stack.html">Stack</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Documentación técnica · v2.0</div>
+    <h1>Arquitectura del <em>Sistema</em></h1>
+    <p>Sistema híbrido local/nube. Funciona sin internet. Se sincroniza cuando hay conexión. Resiste fallos en cualquier capa.</p>
+  </div>
+
+  <!-- DIAGRAM -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Diagrama — click en cada nodo para detalles</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="diagram">
+
+      <div class="diag-layer">
+        <div class="diag-label" style="color:var(--teal)">── Capa 1 · Nodos edge</div>
+        <div class="diag-nodes">
+          <div class="diag-node n-edge" onclick="detail('picow')"><div class="n-name">Pico W</div><div class="n-sub">MicroPython · Autónomo</div></div>
+          <div class="diag-node n-edge" onclick="detail('esp')"><div class="n-name">ESP8266/NodeMCU</div><div class="n-sub">Sensor simple · MQTT</div></div>
+          <div class="diag-node n-edge" onclick="detail('sensores')"><div class="n-name">Sensores</div><div class="n-sub">DHT22 · BH1750 · MH-Z19B · pH</div></div>
+          <div class="diag-node n-edge" onclick="detail('relay')"><div class="n-name">Relay 8ch</div><div class="n-sub">220V AC · Opto-acoplado</div></div>
+        </div>
+      </div>
+
+      <div class="diag-connector">
+        <div class="conn-line"></div>
+        <div class="conn-label">WiFi local · MQTT</div>
+        <div class="conn-line"></div>
+      </div>
+
+      <div class="diag-layer">
+        <div class="diag-label" style="color:var(--amber)">── Capa 2 · Hub central (Pi 4B)</div>
+        <div class="diag-nodes">
+          <div class="diag-node n-hub" onclick="detail('mosquitto')"><div class="n-name">Mosquitto</div><div class="n-sub">MQTT Broker local</div></div>
+          <div class="diag-node n-hub" onclick="detail('fastapi')"><div class="n-name">FastAPI</div><div class="n-sub">API local · REST</div></div>
+          <div class="diag-node n-hub" onclick="detail('sqlite')"><div class="n-name">SQLite</div><div class="n-sub">Buffer · Config · Logs</div></div>
+          <div class="diag-node n-hub" onclick="detail('sync')"><div class="n-name">Sync Service</div><div class="n-sub">Python · Batch → Firebase</div></div>
+          <div class="diag-node n-hub" onclick="detail('hotspot')"><div class="n-name">WiFi Hotspot</div><div class="n-sub">Red local propia</div></div>
+        </div>
+      </div>
+
+      <div class="diag-connector">
+        <div class="conn-line"></div>
+        <div class="conn-label">HTTPS · cuando hay internet</div>
+        <div class="conn-line"></div>
+      </div>
+
+      <div class="diag-layer">
+        <div class="diag-label" style="color:var(--blue)">── Capa 3 · Firebase (nube)</div>
+        <div class="diag-nodes">
+          <div class="diag-node n-cloud" onclick="detail('firestore')"><div class="n-name">Firestore</div><div class="n-sub">Tiempo real · Histórico</div></div>
+          <div class="diag-node n-cloud" onclick="detail('fbauth')"><div class="n-name">Firebase Auth</div><div class="n-sub">RBAC · custom claims</div></div>
+          <div class="diag-node n-cloud" onclick="detail('functions')"><div class="n-name">Cloud Functions</div><div class="n-sub">Node.js · Alertas</div></div>
+          <div class="diag-node n-cloud" onclick="detail('hosting')"><div class="n-name">Hosting</div><div class="n-sub">React · HTTPS · CDN</div></div>
+          <div class="diag-node n-cloud" onclick="detail('fcm')"><div class="n-name">FCM</div><div class="n-sub">Push nativo Android</div></div>
+        </div>
+      </div>
+
+      <div class="diag-connector">
+        <div class="conn-line"></div>
+        <div class="conn-label">Browser · Android</div>
+        <div class="conn-line"></div>
+      </div>
+
+      <div class="diag-layer">
+        <div class="diag-label" style="color:var(--purple)">── Capa 4 · Interfaces</div>
+        <div class="diag-nodes">
+          <div class="diag-node n-ui" onclick="detail('tablet')"><div class="n-name">Tablet Kiosk</div><div class="n-sub">Panel control · Local</div></div>
+          <div class="diag-node n-ui" onclick="detail('android')"><div class="n-name">App Android</div><div class="n-sub">Dual mode · Local+Nube</div></div>
+          <div class="diag-node n-ui" onclick="detail('react')"><div class="n-name">React Dashboard</div><div class="n-sub">Admin · Firebase Hosting</div></div>
+        </div>
+      </div>
+
+      <div class="detail-panel" id="detail-panel">
+        <div class="detail-title" id="detail-title"></div>
+        <div class="detail-body" id="detail-body"></div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="border-color:var(--teal);background:var(--teal-dim)"></div>Nodos edge</div>
+        <div class="legend-item"><div class="legend-dot" style="border-color:var(--amber);background:var(--amber-dim)"></div>Hub local Pi 4B</div>
+        <div class="legend-item"><div class="legend-dot" style="border-color:var(--blue);background:var(--blue-dim)"></div>Firebase nube</div>
+        <div class="legend-item"><div class="legend-dot" style="border-color:var(--purple);background:var(--purple-dim)"></div>Interfaces usuario</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUJO DE DATOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Flujo de datos — sensor a pantalla</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-vline"></div></div>
+        <div class="flow-content">
+          <div class="flow-title" style="color:var(--teal)">Pico W lee sensores cada 30s</div>
+          <div class="flow-desc">DHT22, BH1750, MH-Z19B, FC-28, pH. Evalúa reglas failsafe localmente. Si supera umbral crítico activa relay inmediato sin esperar a nadie.</div>
+          <div class="flow-code">sensor → { temp:24.2, hum:62, co2:820, lux:18000, ph:6.4, ts:... }</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-vline"></div></div>
+        <div class="flow-content">
+          <div class="flow-title" style="color:var(--teal)">Pico W publica vía MQTT</div>
+          <div class="flow-desc">Serializa a JSON y publica en Mosquitto. La Pi suscribe al topic y recibe el dato.</div>
+          <div class="flow-code">topic: verdant/zone1/sensors<br>payload: {"temp":24.2,"hum":62,...}</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-vline"></div></div>
+        <div class="flow-content">
+          <div class="flow-title" style="color:var(--amber)">Pi guarda en SQLite (buffer)</div>
+          <div class="flow-desc">Persiste el dato localmente. La tablet y la app Android en red local pueden leerlo vía FastAPI inmediatamente.</div>
+          <div class="flow-code">sqlite → readings(zone, sensors_json, ts, synced=False)</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">4</div><div class="flow-vline"></div></div>
+        <div class="flow-content">
+          <div class="flow-title" style="color:var(--amber)">Sync service sube batch cada 5 min</div>
+          <div class="flow-desc">Si hay internet: agrega las últimas lecturas y sube en lote a Firestore. Marca como sincronizado. Si no hay internet: guarda, reintenta después.</div>
+          <div class="flow-code">if internet: firebase.batch_write(pending) → mark synced<br>else: keep pending → retry on reconnect</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num">5</div><div class="flow-vline"></div></div>
+        <div class="flow-content">
+          <div class="flow-title" style="color:var(--blue)">Cloud Function evalúa alertas</div>
+          <div class="flow-desc">Al escribir en Firestore se dispara una Function que evalúa si el valor supera umbrales configurados. Si sí, llama a FCM.</div>
+          <div class="flow-code">onWrite(sensors) → if temp > threshold → fcm.send(users)</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left"><div class="flow-num" style="background:var(--green-dim);border-color:var(--green);color:var(--green)">6</div></div>
+        <div class="flow-content">
+          <div class="flow-title" style="color:var(--green)">Push llega al celular</div>
+          <div class="flow-desc">FCM entrega notificación push nativa Android. El React dashboard se actualiza en tiempo real vía Firestore listeners. La tablet lo ve por FastAPI local.</div>
+          <div class="flow-code">FCM → "⚠️ Temperatura alta: 31°C en Zona 1"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODOS DE OPERACIÓN -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Modos de operación</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="modes">
+      <div class="mode-card">
+        <div class="mode-title">🟢 Modo normal</div>
+        <div class="mode-sub">Todo funcionando · con internet</div>
+        <ul class="mode-steps">
+          <li>Pico W lee y publica cada 30s</li>
+          <li>Pi agrega y sube a Firebase cada 5min</li>
+          <li>Tablet ve datos en tiempo real local</li>
+          <li>App Android ve datos desde Firebase</li>
+          <li>Alertas llegan por FCM</li>
+          <li>Dashboard web actualizado</li>
+        </ul>
+      </div>
+      <div class="mode-card">
+        <div class="mode-title">🟡 Sin internet</div>
+        <div class="mode-sub">Red local ok · Firebase no disponible</div>
+        <ul class="mode-steps">
+          <li>Pico W sigue leyendo y publicando</li>
+          <li>Pi guarda en SQLite (buffer)</li>
+          <li>Tablet funciona normal (local)</li>
+          <li>App Android en casa funciona (WiFi Pi)</li>
+          <li>Push notifications no llegan (sin internet)</li>
+          <li>Al volver la red: sube batch acumulado</li>
+        </ul>
+      </div>
+      <div class="mode-card">
+        <div class="mode-title">🔴 Pi caída</div>
+        <div class="mode-sub">Hub offline · nodos solos</div>
+        <ul class="mode-steps">
+          <li>Pico W detecta Pi ausente > 5min</li>
+          <li>Activa modo autónomo completo</li>
+          <li>Ejecuta reglas failsafe locales</li>
+          <li>Relés responden a sensores directamente</li>
+          <li>Cultivo protegido sin servidor</li>
+          <li>Al volver la Pi: resync automático</li>
+        </ul>
+      </div>
+      <div class="mode-card">
+        <div class="mode-title">🔵 Solo nube</div>
+        <div class="mode-sub">Acceso remoto · fuera de casa</div>
+        <ul class="mode-steps">
+          <li>App Android lee Firebase</li>
+          <li>Dashboard web lee Firebase</li>
+          <li>Comandos relay van a Firebase</li>
+          <li>Pi los ejecuta al recibirlos</li>
+          <li>Historial completo disponible</li>
+          <li>Alertas funcionan normalmente</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Verdant Canopy · Arquitectura v2.0 · <a href="verdant-checkpoint.html">Checkpoint</a> · <a href="verdant-stack.html">Stack</a></p>
+</footer>
+
+<script>
+const details = {
+  picow:{title:'📡 Raspberry Pi Pico W — Nodo inteligente autónomo',body:'<strong>Firmware:</strong> MicroPython · <strong>Conectividad:</strong> WiFi 2.4GHz integrado<br>Lee sensores cada 30s → evalúa failsafe → publica MQTT → escucha comandos de relay.<br><strong>Clave:</strong> opera completamente solo si la Pi 4B cae. Guarda umbrales en flash — persisten sin red.'},
+  esp:{title:'📻 ESP8266 / NodeMCU — Nodo sensor simple',body:'<strong>Firmware:</strong> MicroPython o Arduino · <strong>Rol:</strong> solo leer y publicar.<br>Ideal para sensores adicionales en zonas secundarias donde no se necesita control de actuadores. Sin lógica de failsafe.'},
+  sensores:{title:'🌡️ Sensores disponibles',body:'<strong>DHT22:</strong> Temp + Humedad aire · GPIO · ±0.5°C / ±2%<br><strong>BH1750:</strong> Luz (lux) · I²C · calcula DLI acumulado<br><strong>MH-Z19B:</strong> CO₂ ppm · UART · precalentamiento 3min<br><strong>FC-28:</strong> Humedad sustrato · ADC · requiere calibración<br><strong>pH líquido:</strong> medir agua de riego antes de aplicar · rango 6.0–7.0 cannabis'},
+  relay:{title:'⚡ Relay 8 canales 5V — Control AC',body:'<strong>Voltaje control:</strong> 5V del Pico W · <strong>Carga:</strong> 220V AC / 10A por canal<br><strong>Canales:</strong> Luz · Extractor · Recirculador · Humidificador · Calefactor · Bomba riego · Libre × 2<br><strong>Seguridad:</strong> Opto-acoplado — aisla Pico W del circuito de 220V.'},
+  mosquitto:{title:'📨 Mosquitto — MQTT Broker',body:'<strong>Puerto:</strong> 1883 local · <strong>RAM:</strong> ~10MB<br>Intermediario entre nodos (publican) y FastAPI (suscribe). Desacopla hardware de software.<br><strong>Topics:</strong> verdant/zoneN/sensors · verdant/zoneN/relay/cmd · verdant/zoneN/relay/state'},
+  fastapi:{title:'⚡ FastAPI — API local',body:'<strong>Puerto:</strong> 8000 · accesible desde tablet y app Android en red local<br>Expone datos de sensores y control de relés. Funciona sin internet.<br><strong>Endpoints:</strong> /sensors · /relay · /status · /zones'},
+  sqlite:{title:'📄 SQLite — Buffer local',body:'<strong>RAM:</strong> ~1MB · incluido en Python<br>Guarda todas las lecturas con flag <code>synced</code>. El sync service las sube a Firebase y las marca. Config del sistema, logs de eventos, perfiles de cultivo.'},
+  sync:{title:'🔄 Sync Service — Pi → Firebase',body:'Servicio Python que corre en la Pi. Cada 5 minutos: lee pendientes en SQLite → sube batch a Firestore → marca como sincronizados.<br>Alertas críticas van inmediatas sin esperar el batch.<br>Maneja reconexión automática.'},
+  hotspot:{title:'📶 WiFi Hotspot — Red local propia',body:'La Pi 4B emite su propia red WiFi. Pico W, ESPs y tablet se conectan a ella.<br><strong>Ventaja clave:</strong> completamente independiente del router del ISP. Telsur puede caerse — el sistema local sigue funcionando.<br>Configurado con hostapd + dnsmasq.'},
+  firestore:{title:'🔥 Firestore — Base de datos en tiempo real',body:'<strong>Plan Spark (gratis):</strong> 1GB almacenamiento · 50k lecturas/día · 20k escrituras/día<br>Para sensores cada 5min: 288 escrituras/día por zona ✅<br>Listeners en tiempo real para React y Android — los datos llegan sin polling.'},
+  fbauth:{title:'🔐 Firebase Auth — Autenticación',body:'Reemplaza JWT propio. <strong>Custom claims</strong> para RBAC (rol: admin/cuidador/observador).<br>El Admin crea cuentas — la abuela nunca ve pantalla de registro.<br>10k usuarios/mes gratis.'},
+  functions:{title:'⚙️ Cloud Functions — Lógica serverless',body:'<strong>Lenguaje:</strong> Node.js · <strong>Plan gratis:</strong> 2M invocaciones/mes<br>Se dispara al escribir en Firestore. Evalúa si el valor supera umbrales → llama a FCM.<br>Sin servidor que mantener — escala sola.'},
+  hosting:{title:'🌐 Firebase Hosting — React dashboard',body:'Sirve el build de React con HTTPS automático y CDN global.<br><strong>Plan gratis:</strong> 10GB transferencia/mes<br>Deploy: <code>firebase deploy --only hosting</code>'},
+  fcm:{title:'🔔 FCM — Push notifications',body:'Notificaciones push nativas Android. Sin apps extra para el usuario.<br>Alertas críticas llegan siempre a Observadores — incluso con teléfono en silencio.<br><strong>Costo:</strong> gratis ilimitado.'},
+  tablet:{title:'📟 Tablet Android — Panel kiosk',body:'Conectada al WiFi de la Pi · lee FastAPI local · sin internet necesario.<br>Control manual de relés, estado tiempo real, override de automatización.<br><strong>Kiosk:</strong> pantalla siempre encendida, gesto secreto para salir, sin acceso a otras apps.'},
+  android:{title:'📱 App Android — Dual mode',body:'<strong>En casa (WiFi Pi):</strong> habla con FastAPI local directamente<br><strong>Fuera de casa:</strong> lee Firebase en tiempo real<br>Detección automática de red. Semáforo visual — sin números que interpretar. APK por USB, sin registro.'},
+  react:{title:'⚛️ React Dashboard — Admin web',body:'Hosteado en Firebase Hosting. Lee Firestore con listeners en tiempo real.<br><strong>Funciones:</strong> histórico con gráficos · configuración de umbrales · gestión de usuarios · registro de ciclos · comparativa de producción.'}
+};
+
+function detail(key) {
+  const d = details[key];
+  if (!d) return;
+  document.getElementById('detail-title').textContent = d.title;
+  document.getElementById('detail-body').innerHTML = d.body;
+  const panel = document.getElementById('detail-panel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+</script>
+</body>
+</html>

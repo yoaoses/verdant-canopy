@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Canopy · Stack</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:#0e1208;--surface:#151a0e;--surface2:#1c2414;--border:#2a3520;
+    --green:#7ec850;--green-dim:#1e2f10;--green-bright:#a8e070;
+    --amber:#c8a040;--amber-dim:#2a2010;--teal:#50c8a8;--teal-dim:#0e2820;
+    --red:#e05050;--red-dim:#2a1010;--blue:#5090e0;--blue-dim:#101828;
+    --purple:#9070d0;--purple-dim:#181028;
+    --text:#d8e8c8;--text-mid:#8a9e78;--text-dim:#4a5a3a;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.7;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.4;}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(14,18,8,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-brand{display:flex;align-items:baseline;gap:10px;}
+  .nav-name{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--green-bright);letter-spacing:-0.5px;}
+  .nav-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
+  .nav-links{display:flex;gap:28px;list-style:none;}
+  .nav-links a{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-mid);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--green);}
+
+  .page{max-width:1000px;margin:0 auto;padding:56px 40px 100px;}
+
+  .hero{margin-bottom:56px;}
+  .hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:4px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+  .hero-eyebrow::before{content:'';display:inline-block;width:24px;height:1px;background:var(--green);}
+  .hero h1{font-family:'Fraunces',serif;font-size:42px;font-weight:900;line-height:1.1;margin-bottom:12px;letter-spacing:-1px;}
+  .hero h1 em{font-style:italic;color:var(--green-bright);}
+  .hero p{color:var(--text-mid);font-size:15px;max-width:560px;}
+
+  .section{margin-bottom:56px;}
+  .section-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:3px;}
+  .section-title{font-family:'Fraunces',serif;font-size:22px;font-weight:600;}
+  .section-line{flex:1;height:1px;background:var(--border);}
+
+  /* CONSTRAINTS */
+  .constraints{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:24px;}
+  .constraint-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;text-align:center;}
+  .constraint-value{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--green);display:block;margin-bottom:2px;}
+  .constraint-label{font-size:11px;color:var(--text-mid);}
+
+  /* LAYERS */
+  .layer{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px;}
+  .layer-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;transition:background 0.15s;}
+  .layer-header:hover,.layer.open .layer-header{background:var(--surface2);}
+  .layer-stripe{width:3px;height:28px;border-radius:2px;flex-shrink:0;}
+  .layer-name{font-weight:500;font-size:14px;flex:1;}
+  .layer-badge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 8px;border-radius:2px;border:1px solid var(--border);color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+  .layer-toggle{color:var(--text-dim);font-size:11px;transition:transform 0.2s;}
+  .layer.open .layer-toggle{transform:rotate(180deg);}
+  .layer-body{display:none;padding:0 18px 18px 33px;}
+  .layer.open .layer-body{display:block;}
+
+  .stack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:12px;}
+  .stack-item{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;}
+  .stack-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+  .stack-name{font-weight:500;font-size:13px;margin-bottom:2px;}
+  .stack-version{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:4px;}
+  .stack-desc{font-size:12px;color:var(--text-mid);line-height:1.5;}
+  .stack-cmd{font-family:'DM Mono',monospace;font-size:10px;background:var(--surface2);color:var(--green);padding:3px 8px;border-radius:3px;margin-top:5px;display:inline-block;border:1px solid var(--border);}
+  .free-badge{font-family:'DM Mono',monospace;font-size:8px;padding:1px 5px;border-radius:2px;background:var(--green-dim);color:var(--green);border:1px solid var(--green);margin-left:6px;vertical-align:middle;}
+
+  .layer-note{margin-top:10px;font-size:12px;color:var(--text-mid);padding:8px 12px;background:var(--surface2);border-radius:4px;border-left:2px solid var(--border);}
+
+  /* DECISIONS */
+  .decisions{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .dec-row{display:grid;grid-template-columns:1fr 1.2fr 2fr;border-bottom:1px solid var(--border);}
+  .dec-row:last-child{border-bottom:none;}
+  .dec-row:hover:not(.header){background:var(--surface2);}
+  .dec-row.header{background:var(--surface2);}
+  .dec-cell{padding:11px 14px;font-size:13px;border-right:1px solid var(--border);color:var(--text-mid);}
+  .dec-cell:last-child{border-right:none;}
+  .dec-row.header .dec-cell{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
+  .chosen{color:var(--green);font-weight:500;}
+  .vs{color:var(--text-dim);font-size:11px;}
+
+  /* INSTALL */
+  .install{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;font-family:'DM Mono',monospace;font-size:12px;line-height:2;color:var(--text-mid);}
+  .install .cmt{color:var(--text-dim);}
+  .install .cmd{color:var(--text);}
+  .install .ok{color:var(--green);}
+
+  footer{border-top:1px solid var(--border);padding:24px 40px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1px;}
+  footer a{color:var(--green);text-decoration:none;}
+
+  @media(max-width:600px){.page{padding:24px 20px 60px;}.nav-links{display:none;}.dec-row{grid-template-columns:1fr 1fr;}.dec-cell:nth-child(3){grid-column:1/-1;border-right:none;border-top:1px solid var(--border);}.hero h1{font-size:28px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <span class="nav-name">Verdant Canopy</span>
+    <span class="nav-sub">docs</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="verdant-checkpoint.html">Checkpoint</a></li>
+    <li><a href="verdant-architecture.html">Arquitectura</a></li>
+    <li><a href="#" class="active">Stack</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Documentación técnica · v2.0</div>
+    <h1>Stack <em>Tecnológico</em></h1>
+    <p>Todas las tecnologías del sistema, por qué se eligió cada una, y cómo se instala. Costo total de licencias: $0.</p>
+  </div>
+
+  <!-- CONSTRAINTS -->
+  <div class="section">
+    <div class="section-header"><span class="section-num">00</span><span class="section-title">Hardware disponible</span><div class="section-line"></div></div>
+    <div class="constraints">
+      <div class="constraint-card"><span class="constraint-value">2 GB</span><span class="constraint-label">RAM · Raspberry Pi 4B</span></div>
+      <div class="constraint-card"><span class="constraint-value">~300 MB</span><span class="constraint-label">RAM usada en reposo</span></div>
+      <div class="constraint-card"><span class="constraint-value">1.7 GB</span><span class="constraint-label">RAM libre</span></div>
+      <div class="constraint-card"><span class="constraint-value">$0</span><span class="constraint-label">Costo total software</span></div>
+    </div>
+  </div>
+
+  <!-- STACK LAYERS -->
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><span class="section-title">Stack por capa</span><div class="section-line"></div></div>
+
+    <!-- HARDWARE -->
+    <div class="layer open" id="l-hw">
+      <div class="layer-header" onclick="toggle('l-hw')">
+        <div class="layer-stripe" style="background:var(--teal)"></div>
+        <div class="layer-name">Hardware · Sensores y actuadores</div>
+        <span class="layer-badge">Físico</span>
+        <span class="layer-toggle">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="stack-grid">
+          <div class="stack-item"><div class="stack-icon">🌡️</div><div><div class="stack-name">DHT22</div><div class="stack-version">GPIO digital · pull-up 10kΩ</div><div class="stack-desc">Temp −40–80°C (±0.5°C) + Humedad 0–100% (±2%). Max 1 lectura/2s. En producción cada 30s.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">💨</div><div><div class="stack-name">MH-Z19B</div><div class="stack-version">UART 9600 baud</div><div class="stack-desc">CO₂ 400–5000 ppm (±50ppm). Precalentamiento 3min. >1500ppm → ventilación forzada.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">☀️</div><div><div class="stack-name">BH1750</div><div class="stack-version">I²C · dirección 0x23</div><div class="stack-desc">0–65535 lux. Calcula DLI acumulado diario. Verifica cumplimiento del ciclo de luz.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">💧</div><div><div class="stack-name">FC-28 / capacitivo</div><div class="stack-version">ADC del Pico W</div><div class="stack-desc">Humedad sustrato. Preferir capacitivo (más durable). Requiere calibración en seco y saturado.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🧪</div><div><div class="stack-name">Sensor pH (líquido)</div><div class="stack-version">ADC / UART</div><div class="stack-desc">Medir agua de riego antes de aplicar. Rango óptimo según cultivo: cannabis 6.0–7.0.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">⚡</div><div><div class="stack-name">Relay 8 canales 5V</div><div class="stack-version">220V AC · opto-acoplado</div><div class="stack-desc">Conectado al Pico W. Luz · extractor · recirculador · humidificador · calefactor · bomba · ×2 libre.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIRMWARE -->
+    <div class="layer" id="l-fw">
+      <div class="layer-header" onclick="toggle('l-fw')">
+        <div class="layer-stripe" style="background:var(--teal)"></div>
+        <div class="layer-name">Firmware · Nodos IoT</div>
+        <span class="layer-badge">Pico W · ESP</span>
+        <span class="layer-toggle">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="stack-grid">
+          <div class="stack-item"><div class="stack-icon">📡</div><div><div class="stack-name">MicroPython <span class="free-badge">GRATIS</span></div><div class="stack-version">v1.22+ · Pico W y ESP8266</div><div class="stack-desc">Firmware principal. Lee sensores → evalúa failsafe → publica MQTT → escucha comandos relay.</div><div class="stack-cmd">micropython.org/download</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🥧</div><div><div class="stack-name">Ubuntu Server 24.04 LTS <span class="free-badge">GRATIS</span></div><div class="stack-version">Pi 4B · Sin escritorio</div><div class="stack-desc">SO del hub central. Sin interfaz gráfica — ahorra RAM. Acceso SSH. Soporte hasta 2029.</div><div class="stack-cmd">ubuntu.com/download/raspberry-pi</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENSAJERIA -->
+    <div class="layer" id="l-msg">
+      <div class="layer-header" onclick="toggle('l-msg')">
+        <div class="layer-stripe" style="background:var(--amber)"></div>
+        <div class="layer-name">Mensajería · MQTT local</div>
+        <span class="layer-badge">Broker</span>
+        <span class="layer-toggle">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="stack-grid">
+          <div class="stack-item"><div class="stack-icon">📨</div><div><div class="stack-name">Mosquitto <span class="free-badge">GRATIS</span></div><div class="stack-version">v2.0+ · Puerto 1883 · ~10MB RAM</div><div class="stack-desc">Broker MQTT en la Pi. Recibe de nodos, distribuye a suscriptores. Solo tráfico local.</div><div class="stack-cmd">sudo apt install mosquitto</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🐍</div><div><div class="stack-name">paho-mqtt <span class="free-badge">GRATIS</span></div><div class="stack-version">Python client v1.6+</div><div class="stack-desc">Cliente MQTT para Python. FastAPI y sync service suscriben a los topics de los nodos.</div><div class="stack-cmd">pip install paho-mqtt</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACKEND LOCAL -->
+    <div class="layer" id="l-be">
+      <div class="layer-header" onclick="toggle('l-be')">
+        <div class="layer-stripe" style="background:var(--amber)"></div>
+        <div class="layer-name">Backend local · Python en Pi 4B</div>
+        <span class="layer-badge">Core</span>
+        <span class="layer-toggle">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="stack-grid">
+          <div class="stack-item"><div class="stack-icon">⚡</div><div><div class="stack-name">FastAPI <span class="free-badge">GRATIS</span></div><div class="stack-version">Python 3.12 · Async · Uvicorn</div><div class="stack-desc">API local para tablet y app Android. REST + WebSocket. Docs en /docs. Funciona sin internet.</div><div class="stack-cmd">pip install fastapi uvicorn</div></div></div>
+          <div class="stack-item"><div class="stack-icon">⏰</div><div><div class="stack-name">APScheduler <span class="free-badge">GRATIS</span></div><div class="stack-version">v3.10+</div><div class="stack-desc">Schedules de relés. Ciclo de luz 18/6 o 12/12. Perfiles por etapa de cultivo.</div><div class="stack-cmd">pip install apscheduler</div></div></div>
+          <div class="stack-item"><div class="stack-icon">📄</div><div><div class="stack-name">SQLite + SQLAlchemy <span class="free-badge">GRATIS</span></div><div class="stack-version">ORM v2.0+</div><div class="stack-desc">Buffer local. Tablas: lecturas (con flag synced), config, perfiles, log de eventos, ciclos.</div><div class="stack-cmd">pip install sqlalchemy alembic</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🔄</div><div><div class="stack-name">Sync Service (propio)</div><div class="stack-version">Python · corre como servicio systemd</div><div class="stack-desc">Lee SQLite → sube batch a Firestore cada 5min. Alertas van inmediatas. Maneja reconexión.</div><div class="stack-cmd">systemctl enable verdant-sync</div></div></div>
+        </div>
+        <div class="layer-note">El backend local NO tiene auth propia — confía en la red local (solo accesible desde WiFi de la Pi). La auth va en Firebase para el acceso remoto.</div>
+      </div>
+    </div>
+
+    <!-- FIREBASE -->
+    <div class="layer" id="l-fb">
+      <div class="layer-header" onclick="toggle('l-fb')">
+        <div class="layer-stripe" style="background:var(--blue)"></div>
+        <div class="layer-name">Firebase · Backend en nube</div>
+        <span class="layer-badge">Spark Free</span>
+        <span class="layer-toggle">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="stack-grid">
+          <div class="stack-item"><div class="stack-icon">🔥</div><div><div class="stack-name">Firestore <span class="free-badge">GRATIS</span></div><div class="stack-version">1GB · 50k lecturas/día · 20k escrituras/día</div><div class="stack-desc">DB en tiempo real. Colecciones: zones, readings, alerts, cycles, users. Listeners para React y Android.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🔐</div><div><div class="stack-name">Firebase Auth <span class="free-badge">GRATIS</span></div><div class="stack-version">10k usuarios/mes</div><div class="stack-desc">Auth centralizada. Custom claims para RBAC (role: admin/cuidador/observador). Admin crea cuentas.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">⚙️</div><div><div class="stack-name">Cloud Functions <span class="free-badge">GRATIS</span></div><div class="stack-version">Node.js · 2M invocaciones/mes</div><div class="stack-desc">Trigger onWrite en readings → evalúa umbrales → llama FCM si hay alerta. Sin servidor.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🌐</div><div><div class="stack-name">Firebase Hosting <span class="free-badge">GRATIS</span></div><div class="stack-version">10GB transferencia/mes · CDN</div><div class="stack-desc">Sirve el build de React. HTTPS automático. Deploy: firebase deploy --only hosting.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🔔</div><div><div class="stack-name">FCM <span class="free-badge">GRATIS ilimitado</span></div><div class="stack-version">Firebase Cloud Messaging</div><div class="stack-desc">Push nativo Android. Alertas críticas siempre llegan a Observadores. Sin apps extra.</div></div></div>
+        </div>
+        <div class="layer-note"><strong style="color:var(--text)">Plan Spark gratuito alcanza:</strong> 288 escrituras/día por zona (lectura cada 5min) · muy por debajo del límite de 20k/día ✅</div>
+      </div>
+    </div>
+
+    <!-- FRONTEND -->
+    <div class="layer" id="l-fe">
+      <div class="layer-header" onclick="toggle('l-fe')">
+        <div class="layer-stripe" style="background:var(--purple)"></div>
+        <div class="layer-name">Frontend · Interfaces de usuario</div>
+        <span class="layer-badge">UI</span>
+        <span class="layer-toggle">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="stack-grid">
+          <div class="stack-item"><div class="stack-icon">⚛️</div><div><div class="stack-name">React 18 + Recharts <span class="free-badge">GRATIS</span></div><div class="stack-version">CRA · Firebase SDK v9</div><div class="stack-desc">Dashboard admin. Lee Firestore con listeners tiempo real. Gráficos históricos, config, usuarios.</div><div class="stack-cmd">npm install firebase recharts</div></div></div>
+          <div class="stack-item"><div class="stack-icon">📱</div><div><div class="stack-name">Android Studio · Kotlin <span class="free-badge">GRATIS</span></div><div class="stack-version">Kotlin 1.9+ · Firebase Android SDK</div><div class="stack-desc">App dual mode. Detecta red automático. Semáforo visual. APK por USB. Kiosk mode para tablet.</div><div class="stack-cmd">developer.android.com</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOTSPOT -->
+    <div class="layer" id="l-net">
+      <div class="layer-header" onclick="toggle('l-net')">
+        <div class="layer-stripe" style="background:var(--green)"></div>
+        <div class="layer-name">Red local · WiFi Hotspot Pi 4B</div>
+        <span class="layer-badge">Independiente ISP</span>
+        <span class="layer-toggle">▼</span>
+      </div>
+      <div class="layer-body">
+        <div class="stack-grid">
+          <div class="stack-item"><div class="stack-icon">📶</div><div><div class="stack-name">hostapd <span class="free-badge">GRATIS</span></div><div class="stack-version">Access point daemon</div><div class="stack-desc">Convierte la Pi en router WiFi. Pico W, ESPs y tablet se conectan a esta red.</div><div class="stack-cmd">sudo apt install hostapd</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🌐</div><div><div class="stack-name">dnsmasq <span class="free-badge">GRATIS</span></div><div class="stack-version">DHCP + DNS local</div><div class="stack-desc">Asigna IPs fijas a cada nodo. DNS local: verdant.local → IP de la Pi.</div><div class="stack-cmd">sudo apt install dnsmasq</div></div></div>
+        </div>
+        <div class="layer-note">La Pi usa dos interfaces: <code style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green)">eth0</code> conectada al router del ISP para internet · <code style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green)">wlan0</code> como hotspot para los nodos y tablet. Red totalmente independiente del ISP.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DECISIONES -->
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><span class="section-title">Decisiones — por qué este stack</span><div class="section-line"></div></div>
+    <div class="decisions">
+      <div class="dec-row header">
+        <div class="dec-cell">Decisión</div>
+        <div class="dec-cell">Elegido vs descartado</div>
+        <div class="dec-cell">Razón</div>
+      </div>
+      <div class="dec-row"><div class="dec-cell">Backend remoto</div><div class="dec-cell"><span class="chosen">Firebase</span> <span class="vs">vs FastAPI expuesto</span></div><div class="dec-cell">Sin túneles, sin puerto abierto en router ISP, HTTPS automático, gratis.</div></div>
+      <div class="dec-row"><div class="dec-cell">DB en nube</div><div class="dec-cell"><span class="chosen">Firestore</span> <span class="vs">vs InfluxDB cloud</span></div><div class="dec-cell">Listeners tiempo real nativos. Plan gratis alcanza. Integrado con Auth y Functions.</div></div>
+      <div class="dec-row"><div class="dec-cell">Auth</div><div class="dec-cell"><span class="chosen">Firebase Auth</span> <span class="vs">vs JWT propio</span></div><div class="dec-cell">Sin implementar, sin mantener. Custom claims para RBAC. Gratis hasta 10k usuarios.</div></div>
+      <div class="dec-row"><div class="dec-cell">Nodo inteligente</div><div class="dec-cell"><span class="chosen">Pico W</span> <span class="vs">vs Pi manejando GPIO</span></div><div class="dec-cell">Autónomo si la Pi cae. Failsafe local. Más barato. Más seguro (microcontrolador dedicado).</div></div>
+      <div class="dec-row"><div class="dec-cell">Red local</div><div class="dec-cell"><span class="chosen">Hotspot Pi 4B</span> <span class="vs">vs depender del ISP</span></div><div class="dec-cell">Independiente del router Telsur. Funciona aunque caiga el internet. IP fija para cada nodo.</div></div>
+      <div class="dec-row"><div class="dec-cell">Cloud Functions</div><div class="dec-cell"><span class="chosen">Node.js</span> <span class="vs">vs Python</span></div><div class="dec-cell">Python en Functions está en beta. Node.js es nativo de Firebase, mejor soporte y cold starts.</div></div>
+      <div class="dec-row"><div class="dec-cell">Frontend móvil</div><div class="dec-cell"><span class="chosen">Android nativo</span> <span class="vs">vs PWA</span></div><div class="dec-cell">Push notifications 100% confiables. Kiosk mode nativo. APK por USB sin registro.</div></div>
+      <div class="dec-row"><div class="dec-cell">Frecuencia sync</div><div class="dec-cell"><span class="chosen">5 min batch</span> <span class="vs">vs tiempo real</span></div><div class="dec-cell">Organismos vivos tienen tolerancia. 288 escrituras/día vs límite 20k/día. Ahorra cuota gratis.</div></div>
+    </div>
+  </div>
+
+  <!-- INSTALACION -->
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><span class="section-title">Orden de instalación — Pi 4B limpia</span><div class="section-line"></div></div>
+    <div class="install">
+      <span class="cmt"># ── 1. Sistema base ─────────────────────────────────</span><br>
+      <span class="cmd">sudo apt update && sudo apt upgrade -y</span><br>
+      <span class="cmd">sudo apt install -y git python3-pip python3-venv curl</span><br><br>
+      <span class="cmt"># ── 2. Swap (seguridad con 2GB RAM) ─────────────────</span><br>
+      <span class="cmd">sudo fallocate -l 1G /swapfile && sudo chmod 600 /swapfile</span><br>
+      <span class="cmd">sudo mkswap /swapfile && sudo swapon /swapfile</span><br>
+      <span class="cmd">echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab</span><br><br>
+      <span class="cmt"># ── 3. Mosquitto MQTT ───────────────────────────────</span><br>
+      <span class="cmd">sudo apt install -y mosquitto mosquitto-clients</span><br>
+      <span class="cmd">sudo systemctl enable mosquitto</span><br><br>
+      <span class="cmt"># ── 4. WiFi Hotspot ─────────────────────────────────</span><br>
+      <span class="cmd">sudo apt install -y hostapd dnsmasq</span><br>
+      <span class="cmd"># configurar hostapd.conf y dnsmasq.conf</span><br><br>
+      <span class="cmt"># ── 5. Proyecto Python ──────────────────────────────</span><br>
+      <span class="cmd">git clone https://github.com/tuuser/verdant-canopy.git</span><br>
+      <span class="cmd">cd verdant-canopy/hub && python3 -m venv venv</span><br>
+      <span class="cmd">source venv/bin/activate</span><br>
+      <span class="cmd">pip install fastapi uvicorn paho-mqtt sqlalchemy alembic</span><br>
+      <span class="cmd">pip install apscheduler firebase-admin</span><br><br>
+      <span class="cmt"># ── 6. Servicios systemd ────────────────────────────</span><br>
+      <span class="cmd">sudo systemctl enable verdant-api verdant-sync verdant-mqtt-bridge</span><br><br>
+      <span class="ok"># ✅ Hub listo — firmware Pico W es el siguiente paso</span>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Verdant Canopy · Stack v2.0 · <a href="verdant-checkpoint.html">Checkpoint</a> · <a href="verdant-architecture.html">Arquitectura</a></p>
+  <p style="margin-top:4px">Todo el software es open source · Costo total de licencias: $0 · Valdivia, Chile 🇨🇱</p>
+</footer>
+
+<script>
+function toggle(id){document.getElementById(id).classList.toggle('open');}
+</script>
+</body>
+</html>

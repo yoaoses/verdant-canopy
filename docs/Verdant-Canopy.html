@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant Canopy · Checkpoint de Diseño</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0e1208;
+    --surface: #151a0e;
+    --surface2: #1c2414;
+    --border: #2a3520;
+    --green: #7ec850;
+    --green-dim: #1e2f10;
+    --green-bright: #a8e070;
+    --amber: #c8a040;
+    --amber-dim: #2a2010;
+    --teal: #50c8a8;
+    --teal-dim: #0e2820;
+    --red: #e05050;
+    --red-dim: #2a1010;
+    --blue: #5090e0;
+    --blue-dim: #101828;
+    --purple: #9070d0;
+    --purple-dim: #181028;
+    --text: #d8e8c8;
+    --text-mid: #8a9e78;
+    --text-dim: #4a5a3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Subtle grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(14,18,8,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .nav-brand {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+
+  .nav-name {
+    font-family: 'Fraunces', serif;
+    font-size: 20px; font-weight: 900;
+    color: var(--green-bright);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--text-mid);
+    text-decoration: none; letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--green); }
+
+  .page { max-width: 960px; margin: 0 auto; padding: 56px 40px 100px; }
+
+  /* HERO */
+  .hero { margin-bottom: 64px; position: relative; }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--green);
+    letter-spacing: 4px; text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: var(--green);
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 52px; font-weight: 900;
+    line-height: 1.05;
+    color: var(--text);
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--green-bright);
+  }
+
+  .hero-desc {
+    font-size: 15px; color: var(--text-mid);
+    max-width: 540px; line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .hero-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; padding: 4px 12px;
+    border-radius: 2px; border: 1px solid;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  .tag-green  { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .tag-amber  { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+  .tag-teal   { border-color: var(--teal); color: var(--teal); background: var(--teal-dim); }
+  .tag-blue   { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+  .tag-purple { border-color: var(--purple); color: var(--purple); background: var(--purple-dim); }
+
+  /* SECTIONS */
+  .section { margin-bottom: 56px; }
+
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    letter-spacing: 3px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* CONTEXT BOX */
+  .context-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 6px;
+    padding: 20px 24px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.8;
+  }
+
+  .context-box strong { color: var(--text); }
+
+  /* ARCHITECTURE LAYERS */
+  .arch-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .arch-layer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .arch-layer-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .arch-layer-header:hover { background: var(--surface2); }
+
+  .arch-layer.open .arch-layer-header { background: var(--surface2); }
+
+  .arch-layer-stripe {
+    width: 3px; height: 28px;
+    border-radius: 2px; flex-shrink: 0;
+  }
+
+  .arch-layer-name {
+    font-weight: 500; font-size: 14px; flex: 1;
+  }
+
+  .arch-layer-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 2px 8px; border-radius: 2px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  .arch-layer-toggle {
+    color: var(--text-dim); font-size: 11px;
+    transition: transform 0.2s;
+  }
+
+  .arch-layer.open .arch-layer-toggle { transform: rotate(180deg); }
+
+  .arch-layer-body {
+    display: none;
+    padding: 0 18px 18px 33px;
+  }
+
+  .arch-layer.open .arch-layer-body { display: block; }
+
+  .arch-nodes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .arch-node {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .arch-node-name {
+    font-weight: 500; margin-bottom: 3px;
+    font-size: 13px;
+  }
+
+  .arch-node-desc { color: var(--text-mid); line-height: 1.5; }
+
+  .arch-note {
+    margin-top: 12px;
+    font-size: 12px; color: var(--text-mid);
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: 4px;
+    border-left: 2px solid var(--border);
+  }
+
+  /* SYNC LOGIC */
+  .sync-flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 2;
+  }
+
+  .sync-flow .kw { color: var(--amber); }
+  .sync-flow .val { color: var(--green); }
+  .sync-flow .cmt { color: var(--text-dim); }
+  .sync-flow .fn { color: var(--teal); }
+
+  /* ROLES */
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+  }
+
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    border-top: 2px solid;
+  }
+
+  .role-card.admin    { border-top-color: var(--green); }
+  .role-card.cuidador { border-top-color: var(--amber); }
+  .role-card.obs      { border-top-color: var(--blue); }
+
+  .role-name {
+    font-family: 'Fraunces', serif;
+    font-size: 16px; font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .role-who {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    letter-spacing: 1px; margin-bottom: 12px;
+  }
+
+  .role-perms { list-style: none; }
+
+  .role-perms li {
+    font-size: 12px; padding: 3px 0;
+    display: flex; align-items: flex-start; gap: 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-mid);
+  }
+
+  .role-perms li:last-child { border-bottom: none; }
+
+  .perm-yes { color: var(--green); flex-shrink: 0; }
+  .perm-no  { color: var(--text-dim); flex-shrink: 0; }
+
+  /* DEVICES */
+  .devices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+  }
+
+  .device-icon { font-size: 28px; margin-bottom: 10px; }
+
+  .device-name {
+    font-weight: 600; font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .device-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    letter-spacing: 1px; margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .device-features {
+    list-style: none; font-size: 12px;
+    color: var(--text-mid);
+  }
+
+  .device-features li {
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px;
+  }
+
+  .device-features li:last-child { border-bottom: none; }
+  .device-features li::before { content: '→'; color: var(--text-dim); }
+
+  /* SENSORS */
+  .sensors-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .sensors-table th {
+    text-align: left; padding: 10px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sensors-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(42,53,32,0.5);
+    vertical-align: top;
+  }
+
+  .sensors-table tr:last-child td { border-bottom: none; }
+  .sensors-table tr:hover td { background: var(--surface2); }
+
+  .sensors-table code {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; background: var(--surface2);
+    padding: 1px 5px; border-radius: 2px;
+    color: var(--green);
+  }
+
+  /* FAILSAFE */
+  .failsafe-rules {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .failsafe-rule {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 80px;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .failsafe-rule:last-child { border-bottom: none; }
+  .failsafe-rule:hover { background: var(--surface2); }
+  .failsafe-rule.header { background: var(--surface2); }
+
+  .failsafe-cell {
+    padding: 10px 14px;
+    border-right: 1px solid var(--border);
+    color: var(--text-mid);
+  }
+
+  .failsafe-cell:last-child { border-right: none; }
+
+  .failsafe-rule.header .failsafe-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+
+  .priority-high   { color: var(--red); }
+  .priority-medium { color: var(--amber); }
+
+  /* ROADMAP */
+  .roadmap { display: flex; flex-direction: column; gap: 0; }
+
+  .roadmap-item {
+    display: flex; gap: 20px;
+    position: relative;
+  }
+
+  .roadmap-left {
+    display: flex; flex-direction: column;
+    align-items: center; width: 32px; flex-shrink: 0;
+  }
+
+  .roadmap-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    font-weight: 500; flex-shrink: 0;
+    border: 1px solid; z-index: 1;
+  }
+
+  .roadmap-line {
+    flex: 1; width: 1px; background: var(--border);
+    min-height: 24px; margin-top: 4px;
+  }
+
+  .roadmap-content { flex: 1; padding-bottom: 28px; }
+
+  .roadmap-phase {
+    font-family: 'Fraunces', serif;
+    font-size: 16px; font-weight: 600;
+    margin-bottom: 4px; margin-top: 4px;
+  }
+
+  .roadmap-desc {
+    font-size: 13px; color: var(--text-mid);
+    margin-bottom: 8px;
+  }
+
+  .roadmap-items {
+    list-style: none; font-size: 12px;
+    color: var(--text-mid);
+  }
+
+  .roadmap-items li {
+    padding: 3px 0;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+
+  .roadmap-items li::before { content: '—'; color: var(--text-dim); }
+
+  .dot-done    { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .dot-now     { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
+  .dot-soon    { background: var(--surface2); border-color: var(--border); color: var(--text-dim); }
+  .dot-future  { background: var(--surface); border-color: var(--border); color: var(--text-dim); }
+
+  .phase-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; padding: 2px 8px;
+    border-radius: 2px; border: 1px solid;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-left: 8px; vertical-align: middle;
+  }
+
+  .tag-done   { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .tag-now    { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+  .tag-soon   { border-color: var(--text-dim); color: var(--text-dim); }
+  .tag-future { border-color: var(--text-dim); color: var(--text-dim); }
+
+  /* NEXT ACTION */
+  .next-action {
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+    border-radius: 6px;
+    padding: 24px 28px;
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+
+  .next-icon { font-size: 32px; flex-shrink: 0; }
+
+  .next-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; color: var(--green);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .next-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px; font-weight: 600;
+    color: var(--green-bright);
+    margin-bottom: 6px;
+  }
+
+  .next-desc { font-size: 13px; color: var(--text-mid); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px; text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  footer a { color: var(--green); text-decoration: none; }
+
+  @media(max-width:600px) {
+    .page { padding: 24px 20px 60px; }
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .hero h1 { font-size: 32px; }
+    .failsafe-rule { grid-template-columns: 1fr 1fr; }
+    .failsafe-cell:nth-child(3),.failsafe-cell:nth-child(4) { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <span class="nav-name">Verdant Canopy</span>
+    <span class="nav-sub">docs</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Checkpoint</a></li>
+    <li><a href="verdant-architecture.html">Arquitectura</a></li>
+    <li><a href="verdant-stack.html">Stack</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Checkpoint de diseño · v2.0</div>
+    <h1>Verdant<br><em>Canopy</em></h1>
+    <p class="hero-desc">Sistema de monitoreo y automatización para ambientes de cultivo controlado. Diseñado para que la abuela no pierda sus plantas — y para el millennial que descubrió que las lechugas tienen raíces.</p>
+    <div class="hero-tags">
+      <span class="tag tag-green">Firebase · Nube</span>
+      <span class="tag tag-amber">Pi 4B · Hub local</span>
+      <span class="tag tag-teal">Pico W · Nodos</span>
+      <span class="tag tag-blue">Android · Dual mode</span>
+      <span class="tag tag-purple">React · Dashboard</span>
+    </div>
+  </div>
+
+  <!-- 01 CONTEXTO -->
+  <div class="section" id="contexto">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Contexto del proyecto</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="context-box">
+      <strong>Origen:</strong> Cultivo de cannabis medicinal (aceite CBD) bajo autocultivo legal autorizado en Chile (Decreto 298, Ministerio de Salud). La usuaria principal es adulto mayor con dificultades para el monitoreo manual constante.<br><br>
+      <strong>Alcance real:</strong> El sistema es agnóstico al cultivo — monitorea variables ambientales físicas independiente de la especie. Aplicable a invernaderos familiares, hongos gourmet, hortalizas, hierbas medicinales, frutillas, merkén.<br><br>
+      <strong>Filosofía de diseño:</strong> Que sea resistente, no una princesa débil. Los organismos vivos tienen tolerancia — no necesitamos dato segundo a segundo. El sistema debe funcionar sin internet, sin servidor en la nube, y recuperarse solo cuando la conexión vuelve.<br><br>
+      <strong>Hardware disponible:</strong> Raspberry Pi 4B (2GB) · Raspberry Pi Pico W · ESP8266 / NodeMCU varios modelos · Sensor pH líquidos · Tablet Android en desuso.
+    </div>
+  </div>
+
+  <!-- 02 ARQUITECTURA -->
+  <div class="section" id="arquitectura">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Arquitectura — sistema híbrido local/nube</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="arch-layers">
+
+      <div class="arch-layer open" id="al-edge">
+        <div class="arch-layer-header" onclick="toggleLayer('al-edge')">
+          <div class="arch-layer-stripe" style="background:var(--teal)"></div>
+          <div class="arch-layer-name">Capa 1 — Nodos edge (sensores + actuadores)</div>
+          <span class="arch-layer-label">Pico W · ESP</span>
+          <span class="arch-layer-toggle">▼</span>
+        </div>
+        <div class="arch-layer-body">
+          <div class="arch-nodes">
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--teal)">Raspberry Pi Pico W</div>
+              <div class="arch-node-desc">Nodo inteligente autónomo. Lee sensores, controla relés, ejecuta reglas failsafe locales sin depender de la Pi 4B. MicroPython.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--teal)">ESP8266 / NodeMCU</div>
+              <div class="arch-node-desc">Nodo sensor simple. Lee y publica vía MQTT. Sin lógica compleja. Ideal para sensores adicionales en zonas secundarias.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--teal)">Relay 8 canales</div>
+              <div class="arch-node-desc">Control AC 220V. Opto-acoplado. Conectado al Pico W. Luz · extractor · recirculador · humidificador · calefactor · bomba · libre × 2.</div>
+            </div>
+          </div>
+          <div class="arch-note">Los nodos están conectados al WiFi propio de la Pi 4B — red local independiente del router del ISP.</div>
+        </div>
+      </div>
+
+      <div class="arch-layer" id="al-hub">
+        <div class="arch-layer-header" onclick="toggleLayer('al-hub')">
+          <div class="arch-layer-stripe" style="background:var(--amber)"></div>
+          <div class="arch-layer-name">Capa 2 — Hub central (Pi 4B)</div>
+          <span class="arch-layer-label">Local · Always on</span>
+          <span class="arch-layer-toggle">▼</span>
+        </div>
+        <div class="arch-layer-body">
+          <div class="arch-nodes">
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--amber)">Mosquitto MQTT</div>
+              <div class="arch-node-desc">Broker local. Recibe datos de todos los nodos Pico W y ESP. ~10MB RAM.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--amber)">FastAPI local</div>
+              <div class="arch-node-desc">API REST para la tablet y app Android en red local. Funciona sin internet.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--amber)">SQLite</div>
+              <div class="arch-node-desc">Buffer local de datos. Config del sistema. Log de eventos. Datos pendientes de sincronizar.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--amber)">Sync Firebase</div>
+              <div class="arch-node-desc">Servicio Python que sincroniza con Firebase. Batch upload cuando hay conexión. Guarda local si no hay red.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--amber)">WiFi Hotspot</div>
+              <div class="arch-node-desc">La Pi 4B emite su propia red WiFi local. Tablet y nodos se conectan a ella. Independiente del ISP.</div>
+            </div>
+          </div>
+          <div class="arch-note">La Pi NO maneja GPIO directo — delega todo el control físico a los Pico W via MQTT.</div>
+        </div>
+      </div>
+
+      <div class="arch-layer" id="al-cloud">
+        <div class="arch-layer-header" onclick="toggleLayer('al-cloud')">
+          <div class="arch-layer-stripe" style="background:var(--blue)"></div>
+          <div class="arch-layer-name">Capa 3 — Firebase (nube)</div>
+          <span class="arch-layer-label">Cloud · Spark free</span>
+          <span class="arch-layer-toggle">▼</span>
+        </div>
+        <div class="arch-layer-body">
+          <div class="arch-nodes">
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--blue)">Firestore</div>
+              <div class="arch-node-desc">Base de datos en tiempo real. Histórico de sensores. Estado actual. Config de perfiles. 1GB gratis.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--blue)">Firebase Auth</div>
+              <div class="arch-node-desc">Autenticación usuarios. RBAC con custom claims. Reemplaza JWT propio. 10k usuarios/mes gratis.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--blue)">Cloud Functions</div>
+              <div class="arch-node-desc">Lógica de alertas. Procesa escrituras en Firestore y dispara FCM si hay condición de alerta. Node.js.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--blue)">Firebase Hosting</div>
+              <div class="arch-node-desc">Sirve el dashboard React. HTTPS automático. CDN global. 10GB transferencia/mes gratis.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--blue)">FCM</div>
+              <div class="arch-node-desc">Push notifications nativas Android. Alertas críticas siempre llegan. Gratis ilimitado.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-layer" id="al-ui">
+        <div class="arch-layer-header" onclick="toggleLayer('al-ui')">
+          <div class="arch-layer-stripe" style="background:var(--purple)"></div>
+          <div class="arch-layer-name">Capa 4 — Interfaces de usuario</div>
+          <span class="arch-layer-label">Android · React · Kiosk</span>
+          <span class="arch-layer-toggle">▼</span>
+        </div>
+        <div class="arch-layer-body">
+          <div class="arch-nodes">
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--purple)">App Android — dual mode</div>
+              <div class="arch-node-desc">En casa WiFi → habla con Pi local. Fuera → Firebase. Mismo UI, dos fuentes de datos. Cuidadores y observadores.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--purple)">Tablet kiosk</div>
+              <div class="arch-node-desc">Panel de control fijo en el invernadero. Siempre encendida. Conectada al WiFi de la Pi. Gesto secreto para salir del kiosk.</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--purple)">React Dashboard</div>
+              <div class="arch-node-desc">Administración completa desde PC. Hosteado en Firebase Hosting. Configuración, histórico, usuarios, ciclos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 03 SYNC -->
+  <div class="section" id="sync">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Lógica de sincronización local/nube</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="sync-flow">
+      <span class="cmt"># Cada 5 minutos en la Pi 4B</span><br>
+      <span class="kw">def</span> <span class="fn">sync_cycle</span>():<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt"># Agregar lecturas del último intervalo</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;batch = <span class="fn">sqlite.get_pending_readings</span>()<br><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> <span class="fn">internet_available</span>():<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">firebase.upload_batch</span>(batch) <span class="cmt"># sube acumulado</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">sqlite.mark_synced</span>(batch) <span class="cmt"># marca como enviado</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">else</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">sqlite.keep_pending</span>(batch) <span class="cmt"># guarda, reintenta después</span><br><br>
+      <span class="cmt"># Alertas NO esperan el batch — van inmediatas</span><br>
+      <span class="kw">def</span> <span class="fn">on_alert</span>(alert):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> <span class="fn">internet_available</span>():<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">firebase.push_alert</span>(alert) <span class="cmt"># → Cloud Function → FCM</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">else</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">sqlite.queue_alert</span>(alert) <span class="cmt"># se envía cuando vuelve la red</span>
+    </div>
+  </div>
+
+  <!-- 04 FAILSAFE -->
+  <div class="section" id="failsafe">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Reglas failsafe — Pico W autónomo</span>
+      <div class="section-line"></div>
+    </div>
+
+    <p style="font-size:13px;color:var(--text-mid);margin-bottom:14px;">Estas reglas corren <strong style="color:var(--text)">en el Pico W</strong>, sin depender de la Pi 4B ni de internet. Si todo falla, el cultivo sigue protegido.</p>
+
+    <div class="failsafe-rules">
+      <div class="failsafe-rule header">
+        <div class="failsafe-cell">Condición</div>
+        <div class="failsafe-cell">Acción</div>
+        <div class="failsafe-cell">Relay</div>
+        <div class="failsafe-cell">Prioridad</div>
+      </div>
+      <div class="failsafe-rule">
+        <div class="failsafe-cell">Temperatura > 32°C</div>
+        <div class="failsafe-cell">ON</div>
+        <div class="failsafe-cell">Extractor + ventilador</div>
+        <div class="failsafe-cell priority-high">CRÍTICA</div>
+      </div>
+      <div class="failsafe-rule">
+        <div class="failsafe-cell">Temperatura &lt; 14°C</div>
+        <div class="failsafe-cell">ON</div>
+        <div class="failsafe-cell">Calefactor</div>
+        <div class="failsafe-cell priority-high">CRÍTICA</div>
+      </div>
+      <div class="failsafe-rule">
+        <div class="failsafe-cell">CO₂ > 1500 ppm</div>
+        <div class="failsafe-cell">ON</div>
+        <div class="failsafe-cell">Ventilación</div>
+        <div class="failsafe-cell priority-high">CRÍTICA</div>
+      </div>
+      <div class="failsafe-rule">
+        <div class="failsafe-cell">Humedad > 85%</div>
+        <div class="failsafe-cell">ON</div>
+        <div class="failsafe-cell">Extractor</div>
+        <div class="failsafe-cell priority-medium">ALTA</div>
+      </div>
+      <div class="failsafe-rule">
+        <div class="failsafe-cell">Humedad &lt; 35%</div>
+        <div class="failsafe-cell">ON</div>
+        <div class="failsafe-cell">Humidificador</div>
+        <div class="failsafe-cell priority-medium">ALTA</div>
+      </div>
+      <div class="failsafe-rule">
+        <div class="failsafe-cell">Pi caída > 5 min</div>
+        <div class="failsafe-cell">MODO AUTÓNOMO</div>
+        <div class="failsafe-cell">Todos</div>
+        <div class="failsafe-cell priority-high">CRÍTICA</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;font-size:12px;color:var(--text-mid);padding:10px 14px;background:var(--amber-dim);border-radius:4px;border-left:2px solid var(--amber);">
+      Los umbrales son configurables desde el dashboard. El Pico W los descarga de la Pi al arrancar y los guarda en memoria flash — persisten aunque se reinicie.
+    </div>
+  </div>
+
+  <!-- 05 SENSORES -->
+  <div class="section" id="sensores">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Sensores y actuadores</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+      <table class="sensors-table">
+        <thead>
+          <tr>
+            <th>Sensor</th>
+            <th>Variable</th>
+            <th>Protocolo</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>DHT22</td><td>Temp + Humedad aire</td><td><code>GPIO digital</code></td><td>±0.5°C / ±2% · pull-up 10kΩ · max 1 lectura/2s</td></tr>
+          <tr><td>MH-Z19B</td><td>CO₂ (ppm)</td><td><code>UART 9600</code></td><td>400–5000ppm · precalentamiento 3min</td></tr>
+          <tr><td>BH1750</td><td>Luz (lux)</td><td><code>I²C 0x23</code></td><td>0–65535 lux · calcula DLI acumulado</td></tr>
+          <tr><td>FC-28 / capacitivo</td><td>Humedad sustrato</td><td><code>ADC</code></td><td>Requiere calibración · preferir capacitivo (más durable)</td></tr>
+          <tr><td>Sensor pH (líquido)</td><td>pH agua de riego</td><td><code>ADC / UART</code></td><td>Medir antes de regar · rango óptimo por cultivo</td></tr>
+          <tr><td>Relay 8ch 5V</td><td>Control AC 220V</td><td><code>GPIO digital</code></td><td>Opto-acoplado · 8 canales · conectado a Pico W</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:10px;font-size:12px;color:var(--text-mid);padding:10px 14px;background:var(--surface);border-radius:4px;border-left:2px solid var(--border);">
+      <strong style="color:var(--text)">pH de agua de riego:</strong> Cannabis 6.0–7.0 · Hortalizas 6.0–6.8 · Hongos 5.5–6.5 · Hierbas 6.0–7.0. El sensor disponible es para líquidos — medir el agua <em>antes</em> de regar es igual de válido que medir el sustrato.
+    </div>
+  </div>
+
+  <!-- 06 ROLES -->
+  <div class="section" id="roles">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">Roles de usuario (RBAC)</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="roles-grid">
+      <div class="role-card admin">
+        <div class="role-name">👨‍💻 Admin</div>
+        <div class="role-who">Tú — y a futuro otro técnico</div>
+        <ul class="role-perms">
+          <li><span class="perm-yes">✓</span> Control total de relés</li>
+          <li><span class="perm-yes">✓</span> Gestión de usuarios</li>
+          <li><span class="perm-yes">✓</span> Activar / suspender acceso</li>
+          <li><span class="perm-yes">✓</span> Configurar umbrales y perfiles</li>
+          <li><span class="perm-yes">✓</span> Ver logs completos</li>
+          <li><span class="perm-yes">✓</span> Cambiar perfil de cultivo</li>
+          <li><span class="perm-yes">✓</span> Configurar reglas failsafe</li>
+        </ul>
+      </div>
+      <div class="role-card cuidador">
+        <div class="role-name">🌿 Cuidador</div>
+        <div class="role-who">Tu vieja · familiar activo</div>
+        <ul class="role-perms">
+          <li><span class="perm-yes">✓</span> Ver estado en tiempo real</li>
+          <li><span class="perm-yes">✓</span> Controlar relés manualmente</li>
+          <li><span class="perm-yes">✓</span> Recibir alertas push</li>
+          <li><span class="perm-yes">✓</span> Registrar acciones de cuidado</li>
+          <li><span class="perm-no">✗</span> Configurar sistema</li>
+          <li><span class="perm-no">✗</span> Gestionar usuarios</li>
+          <li><span class="perm-no">✗</span> Cambiar reglas failsafe</li>
+        </ul>
+      </div>
+      <div class="role-card obs">
+        <div class="role-name">👁️ Observador</div>
+        <div class="role-who">Familiar lejano · tercero</div>
+        <ul class="role-perms">
+          <li><span class="perm-yes">✓</span> Ver estado actual</li>
+          <li><span class="perm-yes">✓</span> Ver histórico y gráficos</li>
+          <li><span class="perm-yes">✓</span> Ver última acción del cuidador</li>
+          <li><span class="perm-yes">✓</span> Alertas críticas siempre (sin silenciar)</li>
+          <li><span class="perm-no">✗</span> Controlar nada</li>
+          <li><span class="perm-no">✗</span> Configurar nada</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;font-size:12px;color:var(--text-mid);padding:12px 16px;background:var(--surface);border-radius:4px;border-left:2px solid var(--green);">
+      El Admin crea la cuenta del usuario y se la entrega configurada. La abuela nunca ve una pantalla de registro. El Observador recibe alertas críticas siempre — es el respaldo humano del sistema ante accidente, inmovilización o ausencia prolongada del cuidador.
+    </div>
+  </div>
+
+  <!-- 07 DISPOSITIVOS -->
+  <div class="section" id="dispositivos">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">Distribución UX por dispositivo</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="devices-grid">
+      <div class="device-card">
+        <div class="device-icon">📟</div>
+        <div class="device-name">Tablet Android — kiosk</div>
+        <div class="device-role">Panel de control local · Siempre encendida</div>
+        <ul class="device-features">
+          <li>Conectada al WiFi de la Pi · sin internet</li>
+          <li>Control manual de todos los relés</li>
+          <li>Estado en tiempo real local</li>
+          <li>Override de automatización por zona</li>
+          <li>Registro de acciones manuales</li>
+          <li>Gesto secreto para salir del kiosk</li>
+          <li>Pantalla siempre activa (suspension OFF)</li>
+        </ul>
+      </div>
+      <div class="device-card">
+        <div class="device-icon">📱</div>
+        <div class="device-name">App Android — dual mode</div>
+        <div class="device-role">Cuidador · Observador · Remoto</div>
+        <ul class="device-features">
+          <li>En casa WiFi → Pi local directo</li>
+          <li>Fuera de casa → Firebase</li>
+          <li>Semáforo visual (sin números que interpretar)</li>
+          <li>Push notifications nativas FCM</li>
+          <li>APK instalado por USB · sin registro</li>
+          <li>Alertas críticas siempre activas</li>
+        </ul>
+      </div>
+      <div class="device-card">
+        <div class="device-icon">🖥️</div>
+        <div class="device-name">React Dashboard — web</div>
+        <div class="device-role">Admin · Cuidador avanzado · PC</div>
+        <ul class="device-features">
+          <li>Hosteado en Firebase Hosting</li>
+          <li>Histórico completo con gráficos</li>
+          <li>Configuración de umbrales y perfiles</li>
+          <li>Gestión de usuarios y roles</li>
+          <li>Registro de ciclos de producción</li>
+          <li>Comparativa entre ciclos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 ROADMAP -->
+  <div class="section" id="roadmap">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">Roadmap</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="roadmap">
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot dot-done">✓</div>
+          <div class="roadmap-line"></div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Diseño <span class="phase-tag tag-done">LISTO</span></div>
+          <div class="roadmap-desc">Arquitectura, stack, roles, documentación.</div>
+          <ul class="roadmap-items">
+            <li>Arquitectura híbrida local/nube definida</li>
+            <li>Stack tecnológico cerrado</li>
+            <li>RBAC diseñado</li>
+            <li>Documentación HTML generada</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot dot-now">→</div>
+          <div class="roadmap-line"></div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Beta 1 — Core local <span class="phase-tag tag-now">AHORA</span></div>
+          <div class="roadmap-desc">Sistema funcionando en red local sin depender de internet.</div>
+          <ul class="roadmap-items">
+            <li>Firmware Pico W · sensores + relay + failsafe</li>
+            <li>MQTT Mosquitto en Pi 4B</li>
+            <li>FastAPI local · endpoints sensores y relés</li>
+            <li>SQLite buffer local</li>
+            <li>Firebase proyecto · Auth + Firestore + Functions</li>
+            <li>Sync Pi → Firebase (batch + alertas)</li>
+            <li>React dashboard básico en Firebase Hosting</li>
+            <li>App Android dual mode básica</li>
+            <li>Tablet kiosk modo básico</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot dot-soon">2</div>
+          <div class="roadmap-line"></div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Beta 2 — Histórico + perfiles <span class="phase-tag tag-soon">DESPUÉS</span></div>
+          <div class="roadmap-desc">Datos históricos, ciclos de producción, perfiles por especie.</div>
+          <ul class="roadmap-items">
+            <li>Gráficos históricos por ciclo en React</li>
+            <li>Perfiles por especie (cannabis / hortalizas / hongos)</li>
+            <li>Registro de ciclos con notas</li>
+            <li>Comparativa entre ciclos</li>
+            <li>Cámara con timelapse</li>
+            <li>Tablet kiosk completo</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot dot-future">3</div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Beta 3 — IA + escalabilidad <span class="phase-tag tag-future">FUTURO</span></div>
+          <div class="roadmap-desc">Detección visual, recomendaciones automáticas, multi-zona.</div>
+          <ul class="roadmap-items">
+            <li>Evaluación de plantas con visión IA (Claude / GPT-4V)</li>
+            <li>Recomendaciones automáticas basadas en histórico</li>
+            <li>Multi-zona con N Pico W independientes</li>
+            <li>Exportar informes PDF por ciclo</li>
+            <li>API pública para integración con terceros</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 09 SIGUIENTE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">Siguiente paso inmediato</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="next-action">
+      <div class="next-icon">🌱</div>
+      <div>
+        <div class="next-label">Acción inmediata</div>
+        <div class="next-title">Nuevo repo + Firebase project</div>
+        <div class="next-desc">Crear repositorio <code style="font-family:'DM Mono',monospace;color:var(--green-bright)">verdant-canopy</code> en GitHub con estructura nueva. Crear proyecto Firebase. Definir estructura de Firestore. Estos dos pasos desbloquean todo lo demás.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Verdant Canopy · Checkpoint v2.0 · <a href="verdant-architecture.html">Arquitectura</a> · <a href="verdant-stack.html">Stack</a></p>
+  <p style="margin-top:4px">Valdivia, Chile 🇨🇱 · Open Source · MIT</p>
+</footer>
+
+<script>
+function toggleLayer(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+</script>
+</body>
+</html>

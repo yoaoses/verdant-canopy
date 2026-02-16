@@ -1,0 +1,28 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.sqlite
+*.db
+
+# Node
+node_modules/
+dist/
+build/
+.firebase/
+
+# Android
+android/.gradle/
+android/build/
+*.apk
+*.keystore
+
+# Firebase
+.firebaserc
+firebase-debug.log
+
+# Sistema
+.DS_Store
+*.log
