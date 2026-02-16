@@ -620,16 +620,20 @@
         <div class="arch-layer-body">
           <div class="arch-nodes">
             <div class="arch-node">
-              <div class="arch-node-name" style="color:var(--teal)">Raspberry Pi Pico W</div>
-              <div class="arch-node-desc">Nodo inteligente autónomo. Lee sensores, controla relés, ejecuta reglas failsafe locales sin depender de la Pi 4B. MicroPython.</div>
+              <div class="arch-node-name" style="color:var(--teal)">Pico W #1 — Ambiente + Canopy</div>
+              <div class="arch-node-desc">Nodo inteligente autónomo. Lee sensores ambiente, controla relés de luz y extractor. MicroPython. Respaldo local si la Pi 4B cae.</div>
             </div>
             <div class="arch-node">
-              <div class="arch-node-name" style="color:var(--teal)">ESP8266 / NodeMCU</div>
-              <div class="arch-node-desc">Nodo sensor simple. Lee y publica vía MQTT. Sin lógica compleja. Ideal para sensores adicionales en zonas secundarias.</div>
+              <div class="arch-node-name" style="color:var(--teal)">Pico W #2 — Calidad agua de riego</div>
+              <div class="arch-node-desc">Medidor de calidad de agua portátil. Mide pH, TDS, temperatura agua. Display pequeño para mostrar resultado al usuario.</div>
             </div>
             <div class="arch-node">
-              <div class="arch-node-name" style="color:var(--teal)">Relay 8 canales</div>
-              <div class="arch-node-desc">Control AC 220V. Opto-acoplado. Conectado al Pico W. Luz · extractor · recirculador · humidificador · calefactor · bomba · libre × 2.</div>
+              <div class="arch-node-name" style="color:var(--teal)">Sensores — Pico W #1 (Ambiente + Canopy)</div>
+              <div class="arch-node-desc">BH1750 (I²C) → luz / DLI acumulado · DS18B20 sonda → temperatura ambiente · RCWL-1601 ×4 → mapa canopy cuadrado (interpolación bilinear) · Relay ×2 → luz + extractor</div>
+            </div>
+            <div class="arch-node">
+              <div class="arch-node-name" style="color:var(--teal)">Sensores — Pico W #2 (Calidad agua)</div>
+              <div class="arch-node-desc">PT100 + intérprete → temperatura agua · Sonda pH → pH antes de regar · TDS Metro → sales disueltas / nutrientes · Display pequeño → muestra resultado para usuario</div>
             </div>
           </div>
           <div class="arch-note">Los nodos están conectados al WiFi propio de la Pi 4B — red local independiente del router del ISP.</div>
@@ -836,18 +840,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>DHT22</td><td>Temp + Humedad aire</td><td><code>GPIO digital</code></td><td>±0.5°C / ±2% · pull-up 10kΩ · max 1 lectura/2s</td></tr>
-          <tr><td>MH-Z19B</td><td>CO₂ (ppm)</td><td><code>UART 9600</code></td><td>400–5000ppm · precalentamiento 3min</td></tr>
-          <tr><td>BH1750</td><td>Luz (lux)</td><td><code>I²C 0x23</code></td><td>0–65535 lux · calcula DLI acumulado</td></tr>
-          <tr><td>FC-28 / capacitivo</td><td>Humedad sustrato</td><td><code>ADC</code></td><td>Requiere calibración · preferir capacitivo (más durable)</td></tr>
-          <tr><td>Sensor pH (líquido)</td><td>pH agua de riego</td><td><code>ADC / UART</code></td><td>Medir antes de regar · rango óptimo por cultivo</td></tr>
-          <tr><td>Relay 8ch 5V</td><td>Control AC 220V</td><td><code>GPIO digital</code></td><td>Opto-acoplado · 8 canales · conectado a Pico W</td></tr>
+          <tr><td>DS18B20</td><td>Temperatura ambiente y agua</td><td><code>One-wire</code></td><td>±0.5°C · sonda digital</td></tr>
+          <tr><td>PT100 + intérprete</td><td>Temperatura agua precisión</td><td><code>I²C / ADC</code></td><td>±0.1°C · industrial · agua de riego</td></tr>
+          <tr><td>RCWL-1601 ×4</td><td>Distancia canopy</td><td><code>GPIO digital</code></td><td>Ultrasonido · mapa canopy por interpolación bilinear · lectura cada 6 horas</td></tr>
+          <tr><td>BH1750</td><td>Luz (lux) / DLI</td><td><code>I²C 0x23</code></td><td>0–65535 lux · calcula DLI acumulado diario</td></tr>
+          <tr><td>Sonda pH + intérprete</td><td>pH agua de riego</td><td><code>ADC</code></td><td>Rango óptimo por cultivo · cannabis 6.0–7.0</td></tr>
+          <tr><td>TDS Metro</td><td>Sales disueltas (ppm)</td><td><code>ADC</code></td><td>Calidad agua de riego · nutrientes</td></tr>
+          <tr><td>Flujómetro</td><td>Caudal riego</td><td><code>GPIO digital</code></td><td>Reservado para Beta 2 (riego automático)</td></tr>
+          <tr><td>Relay ×4</td><td>Control AC 220V</td><td><code>GPIO digital</code></td><td>×2 por Pico W · opto-acoplado · luz + extractor (+ bomba + recirculador)</td></tr>
         </tbody>
       </table>
     </div>
 
     <div style="margin-top:10px;font-size:12px;color:var(--text-mid);padding:10px 14px;background:var(--surface);border-radius:4px;border-left:2px solid var(--border);">
       <strong style="color:var(--text)">pH de agua de riego:</strong> Cannabis 6.0–7.0 · Hortalizas 6.0–6.8 · Hongos 5.5–6.5 · Hierbas 6.0–7.0. El sensor disponible es para líquidos — medir el agua <em>antes</em> de regar es igual de válido que medir el sustrato.
+    </div>
+
+    <div style="margin-top:10px;font-size:12px;color:var(--text-mid);padding:10px 14px;background:var(--surface);border-radius:4px;border-left:2px solid var(--amber);">
+      <strong style="color:var(--text)">UX — Medidor de calidad de agua:</strong> El Pico W #2 funciona como medidor de calidad de agua portátil. La interfaz muestra semáforo simple: ✅ agua lista / ⚠️ ajustar pH / ❌ no regar. El riego sigue siendo manual — el sistema asiste la decisión, no la automatiza.
     </div>
   </div>
 
@@ -1021,6 +1031,7 @@
             <li>Comparativa entre ciclos</li>
             <li>Cámara con timelapse</li>
             <li>Tablet kiosk completo</li>
+            <li>Automatización de riego (flujómetro + bomba) → Beta 2</li>
           </ul>
         </div>
       </div>

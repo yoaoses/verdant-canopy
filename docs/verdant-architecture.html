@@ -143,10 +143,10 @@
       <div class="diag-layer">
         <div class="diag-label" style="color:var(--teal)">── Capa 1 · Nodos edge</div>
         <div class="diag-nodes">
-          <div class="diag-node n-edge" onclick="detail('picow')"><div class="n-name">Pico W</div><div class="n-sub">MicroPython · Autónomo</div></div>
-          <div class="diag-node n-edge" onclick="detail('esp')"><div class="n-name">ESP8266/NodeMCU</div><div class="n-sub">Sensor simple · MQTT</div></div>
-          <div class="diag-node n-edge" onclick="detail('sensores')"><div class="n-name">Sensores</div><div class="n-sub">DHT22 · BH1750 · MH-Z19B · pH</div></div>
-          <div class="diag-node n-edge" onclick="detail('relay')"><div class="n-name">Relay 8ch</div><div class="n-sub">220V AC · Opto-acoplado</div></div>
+          <div class="diag-node n-edge" onclick="detail('picow')"><div class="n-name">Pico W #1</div><div class="n-sub">Ambiente + Canopy</div></div>
+          <div class="diag-node n-edge" onclick="detail('picow2')"><div class="n-name">Pico W #2</div><div class="n-sub">Calidad agua riego</div></div>
+          <div class="diag-node n-edge" onclick="detail('sensores')"><div class="n-name">Sensores</div><div class="n-sub">DS18B20 · BH1750 · RCWL · pH · TDS</div></div>
+          <div class="diag-node n-edge" onclick="detail('relay')"><div class="n-name">Relay ×4</div><div class="n-sub">220V AC · Opto-acoplado</div></div>
         </div>
       </div>
 
@@ -225,9 +225,9 @@
       <div class="flow-step">
         <div class="flow-left"><div class="flow-num">1</div><div class="flow-vline"></div></div>
         <div class="flow-content">
-          <div class="flow-title" style="color:var(--teal)">Pico W lee sensores cada 30s</div>
-          <div class="flow-desc">DHT22, BH1750, MH-Z19B, FC-28, pH. Evalúa reglas failsafe localmente. Si supera umbral crítico activa relay inmediato sin esperar a nadie.</div>
-          <div class="flow-code">sensor → { temp:24.2, hum:62, co2:820, lux:18000, ph:6.4, ts:... }</div>
+          <div class="flow-title" style="color:var(--teal)">Pico W #1 lee sensores ambiente cada 30s</div>
+          <div class="flow-desc">DS18B20, BH1750, RCWL-1601×4. Evalúa reglas failsafe localmente. Si supera umbral crítico activa relay inmediato sin esperar a nadie.</div>
+          <div class="flow-code">sensor → { temp:24.2, lux:18000, canopy_h:45, ts:... }</div>
         </div>
       </div>
       <div class="flow-step">
@@ -286,7 +286,8 @@
         <div class="mode-title">🟢 Modo normal</div>
         <div class="mode-sub">Todo funcionando · con internet</div>
         <ul class="mode-steps">
-          <li>Pico W lee y publica cada 30s</li>
+          <li>Pico W #1 lee sensores ambiente y publica cada 30s</li>
+          <li>Pico W #2 mide calidad agua cuando el usuario lo usa</li>
           <li>Pi agrega y sube a Firebase cada 5min</li>
           <li>Tablet ve datos en tiempo real local</li>
           <li>App Android ve datos desde Firebase</li>
@@ -310,7 +311,7 @@
         <div class="mode-title">🔴 Pi caída</div>
         <div class="mode-sub">Hub offline · nodos solos</div>
         <ul class="mode-steps">
-          <li>Pico W detecta Pi ausente > 5min</li>
+          <li>Pico W #1 detecta Pi ausente > 5min</li>
           <li>Activa modo autónomo completo</li>
           <li>Ejecuta reglas failsafe locales</li>
           <li>Relés responden a sensores directamente</li>
@@ -341,10 +342,11 @@
 
 <script>
 const details = {
-  picow:{title:'📡 Raspberry Pi Pico W — Nodo inteligente autónomo',body:'<strong>Firmware:</strong> MicroPython · <strong>Conectividad:</strong> WiFi 2.4GHz integrado<br>Lee sensores cada 30s → evalúa failsafe → publica MQTT → escucha comandos de relay.<br><strong>Clave:</strong> opera completamente solo si la Pi 4B cae. Guarda umbrales en flash — persisten sin red.'},
+  picow:{title:'📡 Raspberry Pi Pico W #1 — Ambiente + Canopy',body:'<strong>Firmware:</strong> MicroPython · <strong>Conectividad:</strong> WiFi 2.4GHz integrado<br>Lee sensores ambiente (DS18B20, BH1750, RCWL-1601×4) → evalúa failsafe → publica MQTT → controla relay luz y extractor.<br><strong>Clave:</strong> opera completamente solo si la Pi 4B cae. Guarda umbrales en flash — persisten sin red.'},
+  picow2:{title:'📡 Raspberry Pi Pico W #2 — Calidad agua de riego',body:'<strong>Firmware:</strong> MicroPython · <strong>Función:</strong> medidor de calidad de agua portátil<br>Lee PT100, sonda pH, TDS Metro → muestra resultado en display pequeño.<br><strong>UX:</strong> semáforo simple ✅ agua lista / ⚠️ ajustar pH / ❌ no regar. El riego sigue siendo manual.'},
   esp:{title:'📻 ESP8266 / NodeMCU — Nodo sensor simple',body:'<strong>Firmware:</strong> MicroPython o Arduino · <strong>Rol:</strong> solo leer y publicar.<br>Ideal para sensores adicionales en zonas secundarias donde no se necesita control de actuadores. Sin lógica de failsafe.'},
-  sensores:{title:'🌡️ Sensores disponibles',body:'<strong>DHT22:</strong> Temp + Humedad aire · GPIO · ±0.5°C / ±2%<br><strong>BH1750:</strong> Luz (lux) · I²C · calcula DLI acumulado<br><strong>MH-Z19B:</strong> CO₂ ppm · UART · precalentamiento 3min<br><strong>FC-28:</strong> Humedad sustrato · ADC · requiere calibración<br><strong>pH líquido:</strong> medir agua de riego antes de aplicar · rango 6.0–7.0 cannabis'},
-  relay:{title:'⚡ Relay 8 canales 5V — Control AC',body:'<strong>Voltaje control:</strong> 5V del Pico W · <strong>Carga:</strong> 220V AC / 10A por canal<br><strong>Canales:</strong> Luz · Extractor · Recirculador · Humidificador · Calefactor · Bomba riego · Libre × 2<br><strong>Seguridad:</strong> Opto-acoplado — aisla Pico W del circuito de 220V.'},
+  sensores:{title:'🌡️ Sensores disponibles',body:'<strong>DS18B20:</strong> sonda one-wire, temperatura ambiente y agua, ±0.5°C<br><strong>PT100 + intérprete:</strong> temperatura precisión industrial ±0.1°C, agua de riego<br><strong>RCWL-1601 ×4:</strong> ultrasonido, mapa canopy por interpolación bilinear, lectura cada 6 horas<br><strong>BH1750:</strong> luz en lux, calcula DLI acumulado diario<br><strong>Sonda pH + intérprete:</strong> pH agua de riego, rango óptimo por cultivo<br><strong>TDS Metro:</strong> sales disueltas ppm, calidad agua de riego<br><strong>Flujómetro:</strong> reservado para Beta 2 (riego automático)<br><strong>Relay ×4:</strong> ×2 por Pico W, luz + extractor (+ bomba + recirculador)'},
+  relay:{title:'⚡ Relay 4 canales 5V — Control AC',body:'<strong>Voltaje control:</strong> 5V del Pico W · <strong>Carga:</strong> 220V AC / 10A por canal<br><strong>Canales:</strong> ×2 por Pico W · Pico W #1: Luz + Extractor · Pico W #2: bomba + recirculador (reservado)<br><strong>Seguridad:</strong> Opto-acoplado — aisla Pico W del circuito de 220V.'},
   mosquitto:{title:'📨 Mosquitto — MQTT Broker',body:'<strong>Puerto:</strong> 1883 local · <strong>RAM:</strong> ~10MB<br>Intermediario entre nodos (publican) y FastAPI (suscribe). Desacopla hardware de software.<br><strong>Topics:</strong> verdant/zoneN/sensors · verdant/zoneN/relay/cmd · verdant/zoneN/relay/state'},
   fastapi:{title:'⚡ FastAPI — API local',body:'<strong>Puerto:</strong> 8000 · accesible desde tablet y app Android en red local<br>Expone datos de sensores y control de relés. Funciona sin internet.<br><strong>Endpoints:</strong> /sensors · /relay · /status · /zones'},
   sqlite:{title:'📄 SQLite — Buffer local',body:'<strong>RAM:</strong> ~1MB · incluido en Python<br>Guarda todas las lecturas con flag <code>synced</code>. El sync service las sube a Firebase y las marca. Config del sistema, logs de eventos, perfiles de cultivo.'},
