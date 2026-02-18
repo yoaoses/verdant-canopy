@@ -180,13 +180,13 @@
           <div class="diag-node n-cloud" onclick="detail('fbauth')"><div class="n-name">Firebase Auth</div><div class="n-sub">RBAC · custom claims</div></div>
           <div class="diag-node n-cloud" onclick="detail('functions')"><div class="n-name">Cloud Functions</div><div class="n-sub">Node.js · Alertas</div></div>
           <div class="diag-node n-cloud" onclick="detail('hosting')"><div class="n-name">Hosting</div><div class="n-sub">React · HTTPS · CDN</div></div>
-          <div class="diag-node n-cloud" onclick="detail('fcm')"><div class="n-name">FCM</div><div class="n-sub">Push nativo Android</div></div>
+          <div class="diag-node n-cloud" onclick="detail('fcm')"><div class="n-name">FCM</div><div class="n-sub">Push notifications</div></div>
         </div>
       </div>
 
       <div class="diag-connector">
         <div class="conn-line"></div>
-        <div class="conn-label">Browser · Android</div>
+        <div class="conn-label">Browser · PWA</div>
         <div class="conn-line"></div>
       </div>
 
@@ -194,7 +194,7 @@
         <div class="diag-label" style="color:var(--purple)">── Capa 4 · Interfaces</div>
         <div class="diag-nodes">
           <div class="diag-node n-ui" onclick="detail('tablet')"><div class="n-name">Tablet Kiosk</div><div class="n-sub">Panel control · Local</div></div>
-          <div class="diag-node n-ui" onclick="detail('android')"><div class="n-name">App Android</div><div class="n-sub">Dual mode · Local+Nube</div></div>
+          <div class="diag-node n-ui" onclick="detail('pwa')"><div class="n-name">PWA</div><div class="n-sub">Dashboard · Kiosk</div></div>
           <div class="diag-node n-ui" onclick="detail('react')"><div class="n-name">React Dashboard</div><div class="n-sub">Admin · Firebase Hosting</div></div>
         </div>
       </div>
@@ -242,7 +242,7 @@
         <div class="flow-left"><div class="flow-num">3</div><div class="flow-vline"></div></div>
         <div class="flow-content">
           <div class="flow-title" style="color:var(--amber)">Pi guarda en SQLite (buffer)</div>
-          <div class="flow-desc">Persiste el dato localmente. La tablet y la app Android en red local pueden leerlo vía FastAPI inmediatamente.</div>
+          <div class="flow-desc">Persiste el dato localmente. La tablet y la PWA en red local pueden leerlo vía FastAPI inmediatamente.</div>
           <div class="flow-code">sqlite → readings(zone, sensors_json, ts, synced=False)</div>
         </div>
       </div>
@@ -266,7 +266,7 @@
         <div class="flow-left"><div class="flow-num" style="background:var(--green-dim);border-color:var(--green);color:var(--green)">6</div></div>
         <div class="flow-content">
           <div class="flow-title" style="color:var(--green)">Push llega al celular</div>
-          <div class="flow-desc">FCM entrega notificación push nativa Android. El React dashboard se actualiza en tiempo real vía Firestore listeners. La tablet lo ve por FastAPI local.</div>
+          <div class="flow-desc">FCM entrega notificación push web. El React dashboard se actualiza en tiempo real vía Firestore listeners. La tablet lo ve por FastAPI local.</div>
           <div class="flow-code">FCM → "⚠️ Temperatura alta: 31°C en Zona 1"</div>
         </div>
       </div>
@@ -290,7 +290,7 @@
           <li>Pico W #2 mide calidad agua cuando el usuario lo usa</li>
           <li>Pi agrega y sube a Firebase cada 5min</li>
           <li>Tablet ve datos en tiempo real local</li>
-          <li>App Android ve datos desde Firebase</li>
+          <li>La PWA ve datos desde Firebase</li>
           <li>Alertas llegan por FCM</li>
           <li>Dashboard web actualizado</li>
         </ul>
@@ -302,7 +302,7 @@
           <li>Pico W sigue leyendo y publicando</li>
           <li>Pi guarda en SQLite (buffer)</li>
           <li>Tablet funciona normal (local)</li>
-          <li>App Android en casa funciona (WiFi Pi)</li>
+          <li>La PWA funciona normal (local)</li>
           <li>Push notifications no llegan (sin internet)</li>
           <li>Al volver la red: sube batch acumulado</li>
         </ul>
@@ -323,7 +323,7 @@
         <div class="mode-title">🔵 Solo nube</div>
         <div class="mode-sub">Acceso remoto · fuera de casa</div>
         <ul class="mode-steps">
-          <li>App Android lee Firebase</li>
+          <li>La PWA lee Firebase</li>
           <li>Dashboard web lee Firebase</li>
           <li>Comandos relay van a Firebase</li>
           <li>Pi los ejecuta al recibirlos</li>
@@ -348,17 +348,17 @@ const details = {
   sensores:{title:'🌡️ Sensores disponibles',body:'<strong>DS18B20:</strong> sonda one-wire, temperatura ambiente y agua, ±0.5°C<br><strong>PT100 + intérprete:</strong> temperatura precisión industrial ±0.1°C, agua de riego<br><strong>RCWL-1601 ×4:</strong> ultrasonido, mapa canopy por interpolación bilinear, lectura cada 6 horas<br><strong>BH1750:</strong> luz en lux, calcula DLI acumulado diario<br><strong>Sonda pH + intérprete:</strong> pH agua de riego, rango óptimo por cultivo<br><strong>TDS Metro:</strong> sales disueltas ppm, calidad agua de riego<br><strong>Flujómetro:</strong> reservado para Beta 2 (riego automático)<br><strong>Relay ×4:</strong> ×2 por Pico W, luz + extractor (+ bomba + recirculador)'},
   relay:{title:'⚡ Relay 4 canales 5V — Control AC',body:'<strong>Voltaje control:</strong> 5V del Pico W · <strong>Carga:</strong> 220V AC / 10A por canal<br><strong>Canales:</strong> ×2 por Pico W · Pico W #1: Luz + Extractor · Pico W #2: bomba + recirculador (reservado)<br><strong>Seguridad:</strong> Opto-acoplado — aisla Pico W del circuito de 220V.'},
   mosquitto:{title:'📨 Mosquitto — MQTT Broker',body:'<strong>Puerto:</strong> 1883 local · <strong>RAM:</strong> ~10MB<br>Intermediario entre nodos (publican) y FastAPI (suscribe). Desacopla hardware de software.<br><strong>Topics:</strong> verdant/zoneN/sensors · verdant/zoneN/relay/cmd · verdant/zoneN/relay/state'},
-  fastapi:{title:'⚡ FastAPI — API local',body:'<strong>Puerto:</strong> 8000 · accesible desde tablet y app Android en red local<br>Expone datos de sensores y control de relés. Funciona sin internet.<br><strong>Endpoints:</strong> /sensors · /relay · /status · /zones'},
+  fastapi:{title:'⚡ FastAPI — API local',body:'<strong>Puerto:</strong> 8000 · accesible desde tablet y PWA en red local<br>Expone datos de sensores y control de relés. Funciona sin internet.<br><strong>Endpoints:</strong> /sensors · /relay · /status · /zones'},
   sqlite:{title:'📄 SQLite — Buffer local',body:'<strong>RAM:</strong> ~1MB · incluido en Python<br>Guarda todas las lecturas con flag <code>synced</code>. El sync service las sube a Firebase y las marca. Config del sistema, logs de eventos, perfiles de cultivo.'},
   sync:{title:'🔄 Sync Service — Pi → Firebase',body:'Servicio Python que corre en la Pi. Cada 5 minutos: lee pendientes en SQLite → sube batch a Firestore → marca como sincronizados.<br>Alertas críticas van inmediatas sin esperar el batch.<br>Maneja reconexión automática.'},
   hotspot:{title:'📶 WiFi Hotspot — Red local propia',body:'La Pi 4B emite su propia red WiFi. Pico W, ESPs y tablet se conectan a ella.<br><strong>Ventaja clave:</strong> completamente independiente del router del ISP. Telsur puede caerse — el sistema local sigue funcionando.<br>Configurado con hostapd + dnsmasq.'},
-  firestore:{title:'🔥 Firestore — Base de datos en tiempo real',body:'<strong>Plan Spark (gratis):</strong> 1GB almacenamiento · 50k lecturas/día · 20k escrituras/día<br>Para sensores cada 5min: 288 escrituras/día por zona ✅<br>Listeners en tiempo real para React y Android — los datos llegan sin polling.'},
+  firestore:{title:'🔥 Firestore — Base de datos en tiempo real',body:'<strong>Plan Spark (gratis):</strong> 1GB almacenamiento · 50k lecturas/día · 20k escrituras/día<br>Para sensores cada 5min: 288 escrituras/día por zona ✅<br>Listeners en tiempo real para React y PWA — los datos llegan sin polling.'},
   fbauth:{title:'🔐 Firebase Auth — Autenticación',body:'Reemplaza JWT propio. <strong>Custom claims</strong> para RBAC (rol: admin/cuidador/observador).<br>El Admin crea cuentas — la abuela nunca ve pantalla de registro.<br>10k usuarios/mes gratis.'},
   functions:{title:'⚙️ Cloud Functions — Lógica serverless',body:'<strong>Lenguaje:</strong> Node.js · <strong>Plan gratis:</strong> 2M invocaciones/mes<br>Se dispara al escribir en Firestore. Evalúa si el valor supera umbrales → llama a FCM.<br>Sin servidor que mantener — escala sola.'},
   hosting:{title:'🌐 Firebase Hosting — React dashboard',body:'Sirve el build de React con HTTPS automático y CDN global.<br><strong>Plan gratis:</strong> 10GB transferencia/mes<br>Deploy: <code>firebase deploy --only hosting</code>'},
-  fcm:{title:'🔔 FCM — Push notifications',body:'Notificaciones push nativas Android. Sin apps extra para el usuario.<br>Alertas críticas llegan siempre a Observadores — incluso con teléfono en silencio.<br><strong>Costo:</strong> gratis ilimitado.'},
+  fcm:{title:'🔔 FCM — Push notifications',body:'Notificaciones push web via FCM. Sin apps extra para el usuario.<br>Alertas críticas llegan siempre a Observadores — incluso con teléfono en silencio.<br><strong>Costo:</strong> gratis ilimitado.'},
   tablet:{title:'📟 Tablet Android — Panel kiosk',body:'Conectada al WiFi de la Pi · lee FastAPI local · sin internet necesario.<br>Control manual de relés, estado tiempo real, override de automatización.<br><strong>Kiosk:</strong> pantalla siempre encendida, gesto secreto para salir, sin acceso a otras apps.'},
-  android:{title:'📱 App Android — Dual mode',body:'<strong>En casa (WiFi Pi):</strong> habla con FastAPI local directamente<br><strong>Fuera de casa:</strong> lee Firebase en tiempo real<br>Detección automática de red. Semáforo visual — sin números que interpretar. APK por USB, sin registro.'},
+  pwa:{title:'📱 PWA — Progressive Web App',body:'<strong>En casa (WiFi Pi):</strong> habla con FastAPI local directamente<br><strong>Fuera de casa:</strong> lee Firebase en tiempo real<br>Funciona offline con Service Workers. Detección automática de red. Semáforo visual — sin números que interpretar.'},
   react:{title:'⚛️ React Dashboard — Admin web',body:'Hosteado en Firebase Hosting. Lee Firestore con listeners en tiempo real.<br><strong>Funciones:</strong> histórico con gráficos · configuración de umbrales · gestión de usuarios · registro de ciclos · comparativa de producción.'}
 };
 

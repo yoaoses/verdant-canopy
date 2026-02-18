@@ -197,7 +197,7 @@
       </div>
       <div class="layer-body">
         <div class="stack-grid">
-          <div class="stack-item"><div class="stack-icon">⚡</div><div><div class="stack-name">FastAPI <span class="free-badge">GRATIS</span></div><div class="stack-version">Python 3.12 · Async · Uvicorn</div><div class="stack-desc">API local para tablet y app Android. REST + WebSocket. Docs en /docs. Funciona sin internet.</div><div class="stack-cmd">pip install fastapi uvicorn</div></div></div>
+          <div class="stack-item"><div class="stack-icon">⚡</div><div><div class="stack-name">FastAPI <span class="free-badge">GRATIS</span></div><div class="stack-version">Python 3.12 · Async · Uvicorn</div><div class="stack-desc">API local para tablet y PWA. REST + WebSocket. Docs en /docs. Funciona sin internet.</div><div class="stack-cmd">pip install fastapi uvicorn</div></div></div>
           <div class="stack-item"><div class="stack-icon">⏰</div><div><div class="stack-name">APScheduler <span class="free-badge">GRATIS</span></div><div class="stack-version">v3.10+</div><div class="stack-desc">Schedules de relés. Ciclo de luz 18/6 o 12/12. Perfiles por etapa de cultivo.</div><div class="stack-cmd">pip install apscheduler</div></div></div>
           <div class="stack-item"><div class="stack-icon">📄</div><div><div class="stack-name">SQLite + SQLAlchemy <span class="free-badge">GRATIS</span></div><div class="stack-version">ORM v2.0+</div><div class="stack-desc">Buffer local. Tablas: lecturas (con flag synced), config, perfiles, log de eventos, ciclos.</div><div class="stack-cmd">pip install sqlalchemy alembic</div></div></div>
           <div class="stack-item"><div class="stack-icon">🔄</div><div><div class="stack-name">Sync Service (propio)</div><div class="stack-version">Python · corre como servicio systemd</div><div class="stack-desc">Lee SQLite → sube batch a Firestore cada 5min. Alertas van inmediatas. Maneja reconexión.</div><div class="stack-cmd">systemctl enable verdant-sync</div></div></div>
@@ -216,11 +216,11 @@
       </div>
       <div class="layer-body">
         <div class="stack-grid">
-          <div class="stack-item"><div class="stack-icon">🔥</div><div><div class="stack-name">Firestore <span class="free-badge">GRATIS</span></div><div class="stack-version">1GB · 50k lecturas/día · 20k escrituras/día</div><div class="stack-desc">DB en tiempo real. Colecciones: zones, readings, alerts, cycles, users. Listeners para React y Android.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🔥</div><div><div class="stack-name">Firestore <span class="free-badge">GRATIS</span></div><div class="stack-version">1GB · 50k lecturas/día · 20k escrituras/día</div><div class="stack-desc">DB en tiempo real. Colecciones: zones, readings, alerts, cycles, users. Listeners para React y PWA.</div></div></div>
           <div class="stack-item"><div class="stack-icon">🔐</div><div><div class="stack-name">Firebase Auth <span class="free-badge">GRATIS</span></div><div class="stack-version">10k usuarios/mes</div><div class="stack-desc">Auth centralizada. Custom claims para RBAC (role: admin/cuidador/observador). Admin crea cuentas.</div></div></div>
           <div class="stack-item"><div class="stack-icon">⚙️</div><div><div class="stack-name">Cloud Functions <span class="free-badge">GRATIS</span></div><div class="stack-version">Node.js · 2M invocaciones/mes</div><div class="stack-desc">Trigger onWrite en readings → evalúa umbrales → llama FCM si hay alerta. Sin servidor.</div></div></div>
           <div class="stack-item"><div class="stack-icon">🌐</div><div><div class="stack-name">Firebase Hosting <span class="free-badge">GRATIS</span></div><div class="stack-version">10GB transferencia/mes · CDN</div><div class="stack-desc">Sirve el build de React. HTTPS automático. Deploy: firebase deploy --only hosting.</div></div></div>
-          <div class="stack-item"><div class="stack-icon">🔔</div><div><div class="stack-name">FCM <span class="free-badge">GRATIS ilimitado</span></div><div class="stack-version">Firebase Cloud Messaging</div><div class="stack-desc">Push nativo Android. Alertas críticas siempre llegan a Observadores. Sin apps extra.</div></div></div>
+          <div class="stack-item"><div class="stack-icon">🔔</div><div><div class="stack-name">FCM <span class="free-badge">GRATIS ilimitado</span></div><div class="stack-version">Firebase Cloud Messaging</div><div class="stack-desc">Push notifications web (via FCM). Alertas críticas siempre llegan a Observadores. Sin apps extra.</div></div></div>
         </div>
         <div class="layer-note"><strong style="color:var(--text)">Plan Spark gratuito alcanza:</strong> 288 escrituras/día por zona (lectura cada 5min) · muy por debajo del límite de 20k/día ✅</div>
       </div>
@@ -237,7 +237,7 @@
       <div class="layer-body">
         <div class="stack-grid">
           <div class="stack-item"><div class="stack-icon">⚛️</div><div><div class="stack-name">React 18 + Recharts <span class="free-badge">GRATIS</span></div><div class="stack-version">CRA · Firebase SDK v9</div><div class="stack-desc">Dashboard admin. Lee Firestore con listeners tiempo real. Gráficos históricos, config, usuarios.</div><div class="stack-cmd">npm install firebase recharts</div></div></div>
-          <div class="stack-item"><div class="stack-icon">📱</div><div><div class="stack-name">Android Studio · Kotlin <span class="free-badge">GRATIS</span></div><div class="stack-version">Kotlin 1.9+ · Firebase Android SDK</div><div class="stack-desc">App dual mode. Detecta red automático. Semáforo visual. APK por USB. Kiosk mode para tablet.</div><div class="stack-cmd">developer.android.com</div></div></div>
+          <div class="stack-item"><div class="stack-icon">📱</div><div><div class="stack-name">PWA + Service Workers <span class="free-badge">GRATIS</span></div><div class="stack-version">React · PWA · Firebase Web SDK</div><div class="stack-desc">Dashboard admin. Funciona offline. Kiosk mode en tablet con Chrome. Un solo código para tablet, celular, PC.</div><div class="stack-cmd">npm install firebase recharts</div></div></div>
         </div>
       </div>
     </div>
@@ -276,7 +276,7 @@
       <div class="dec-row"><div class="dec-cell">Nodo inteligente</div><div class="dec-cell"><span class="chosen">Pico W</span> <span class="vs">vs Pi manejando GPIO</span></div><div class="dec-cell">Autónomo si la Pi cae. Failsafe local. Más barato. Más seguro (microcontrolador dedicado).</div></div>
       <div class="dec-row"><div class="dec-cell">Red local</div><div class="dec-cell"><span class="chosen">Hotspot Pi 4B</span> <span class="vs">vs depender del ISP</span></div><div class="dec-cell">Independiente del router Telsur. Funciona aunque caiga el internet. IP fija para cada nodo.</div></div>
       <div class="dec-row"><div class="dec-cell">Cloud Functions</div><div class="dec-cell"><span class="chosen">Node.js</span> <span class="vs">vs Python</span></div><div class="dec-cell">Python en Functions está en beta. Node.js es nativo de Firebase, mejor soporte y cold starts.</div></div>
-      <div class="dec-row"><div class="dec-cell">Frontend móvil</div><div class="dec-cell"><span class="chosen">Android nativo</span> <span class="vs">vs PWA</span></div><div class="dec-cell">Push notifications 100% confiables. Kiosk mode nativo. APK por USB sin registro.</div></div>
+      <div class="dec-row"><div class="dec-cell">Frontend móvil</div><div class="dec-cell"><span class="chosen">PWA</span> <span class="vs">vs Android nativo</span></div><div class="dec-cell">Un solo código React. Service Workers → offline. Chrome kiosk = app nativa. Firebase Web SDK.</div></div>
       <div class="dec-row"><div class="dec-cell">Frecuencia sync</div><div class="dec-cell"><span class="chosen">5 min batch</span> <span class="vs">vs tiempo real</span></div><div class="dec-cell">Organismos vivos tienen tolerancia. 288 escrituras/día vs límite 20k/día. Ahorra cuota gratis.</div></div>
     </div>
   </div>

@@ -54,14 +54,21 @@ def main():
                 # Leer sensores
                 luz = sensors.read_light()
                 temp = sensors.read_temperature()
+                dht = sensors.read_dht11()
+                hum_sustrato = sensors.read_humedad_sustrato()
+                ph = sensors.read_ph()
                 
                 data = {
                     "timestamp": now,
                     "luz_lux": luz,
-                    "temperatura": temp
+                    "temperatura_ds18": temp,
+                    "temperatura_dht": dht["temperatura"],
+                    "humedad_aire": dht["humedad"],
+                    "humedad_sustrato": hum_sustrato,
+                    "ph_agua": ph
                 }
                 
-                print(f"Sensores: {temp}°C · {luz} lux")
+                print(f"Sensores: {temp}°C · {dht['humedad']}%RH · {luz} lux · pH {ph} · Sustrato {hum_sustrato}%")
                 
                 # Evaluar failsafe
                 failsafe.check(data)

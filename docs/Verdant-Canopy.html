@@ -580,7 +580,7 @@
       <span class="tag tag-green">Firebase · Nube</span>
       <span class="tag tag-amber">Pi 4B · Hub local</span>
       <span class="tag tag-teal">Pico W · Nodos</span>
-      <span class="tag tag-blue">Android · Dual mode</span>
+      <span class="tag tag-blue">PWA · Dual mode</span>
       <span class="tag tag-purple">React · Dashboard</span>
     </div>
   </div>
@@ -596,7 +596,7 @@
       <strong>Origen:</strong> Cultivo de cannabis medicinal (aceite CBD) bajo autocultivo legal autorizado en Chile (Decreto 298, Ministerio de Salud). La usuaria principal es adulto mayor con dificultades para el monitoreo manual constante.<br><br>
       <strong>Alcance real:</strong> El sistema es agnóstico al cultivo — monitorea variables ambientales físicas independiente de la especie. Aplicable a invernaderos familiares, hongos gourmet, hortalizas, hierbas medicinales, frutillas, merkén.<br><br>
       <strong>Filosofía de diseño:</strong> Que sea resistente, no una princesa débil. Los organismos vivos tienen tolerancia — no necesitamos dato segundo a segundo. El sistema debe funcionar sin internet, sin servidor en la nube, y recuperarse solo cuando la conexión vuelve.<br><br>
-      <strong>Hardware disponible:</strong> Raspberry Pi 4B (2GB) · Raspberry Pi Pico W · ESP8266 / NodeMCU varios modelos · Sensor pH líquidos · Tablet Android en desuso.
+      <strong>Hardware disponible:</strong> Raspberry Pi 4B (2GB) · Raspberry Pi Pico W · ESP8266 / NodeMCU varios modelos · Sensor pH líquidos · Tablet en desuso.
     </div>
   </div>
 
@@ -655,7 +655,7 @@
             </div>
             <div class="arch-node">
               <div class="arch-node-name" style="color:var(--amber)">FastAPI local</div>
-              <div class="arch-node-desc">API REST para la tablet y app Android en red local. Funciona sin internet.</div>
+              <div class="arch-node-desc">API REST para la tablet y PWA en red local. Funciona sin internet.</div>
             </div>
             <div class="arch-node">
               <div class="arch-node-name" style="color:var(--amber)">SQLite</div>
@@ -701,7 +701,7 @@
             </div>
             <div class="arch-node">
               <div class="arch-node-name" style="color:var(--blue)">FCM</div>
-              <div class="arch-node-desc">Push notifications nativas Android. Alertas críticas siempre llegan. Gratis ilimitado.</div>
+              <div class="arch-node-desc">Push notifications web. Alertas críticas siempre llegan. Gratis ilimitado.</div>
             </div>
           </div>
         </div>
@@ -711,13 +711,13 @@
         <div class="arch-layer-header" onclick="toggleLayer('al-ui')">
           <div class="arch-layer-stripe" style="background:var(--purple)"></div>
           <div class="arch-layer-name">Capa 4 — Interfaces de usuario</div>
-          <span class="arch-layer-label">Android · React · Kiosk</span>
+          <span class="arch-layer-label">PWA · React · Kiosk</span>
           <span class="arch-layer-toggle">▼</span>
         </div>
         <div class="arch-layer-body">
           <div class="arch-nodes">
             <div class="arch-node">
-              <div class="arch-node-name" style="color:var(--purple)">App Android — dual mode</div>
+              <div class="arch-node-name" style="color:var(--purple)">PWA — dual mode</div>
               <div class="arch-node-desc">En casa WiFi → habla con Pi local. Fuera → Firebase. Mismo UI, dos fuentes de datos. Cuidadores y observadores.</div>
             </div>
             <div class="arch-node">
@@ -926,7 +926,7 @@
     <div class="devices-grid">
       <div class="device-card">
         <div class="device-icon">📟</div>
-        <div class="device-name">Tablet Android — kiosk</div>
+        <div class="device-name">Tablet — kiosk</div>
         <div class="device-role">Panel de control local · Siempre encendida</div>
         <ul class="device-features">
           <li>Conectada al WiFi de la Pi · sin internet</li>
@@ -940,7 +940,7 @@
       </div>
       <div class="device-card">
         <div class="device-icon">📱</div>
-        <div class="device-name">App Android — dual mode</div>
+        <div class="device-name">PWA — dual mode</div>
         <div class="device-role">Cuidador · Observador · Remoto</div>
         <ul class="device-features">
           <li>En casa WiFi → Pi local directo</li>
@@ -1010,7 +1010,7 @@
             <li>Firebase proyecto · Auth + Firestore + Functions</li>
             <li>Sync Pi → Firebase (batch + alertas)</li>
             <li>React dashboard básico en Firebase Hosting</li>
-            <li>App Android dual mode básica</li>
+            <li>PWA dual mode básica</li>
             <li>Tablet kiosk modo básico</li>
           </ul>
         </div>

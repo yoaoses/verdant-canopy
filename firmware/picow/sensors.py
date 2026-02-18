@@ -28,6 +28,25 @@ class Sensors:
         # Simulado: rango realista 18-28°C
         return round(random.uniform(18.0, 28.0), 1)
     
+    def read_dht11(self):
+        """Lee DHT11 - temperatura + humedad aire"""
+        # Simulado: DHT11 es menos preciso que DHT22
+        return {
+            "temperatura": round(random.uniform(18.0, 28.0), 0),  # sin decimales
+            "humedad": round(random.uniform(40.0, 70.0), 0)
+        }
+    
+    def read_humedad_sustrato(self):
+        """Lee sensor capacitivo - humedad sustrato %"""
+        # Simulado: 0-100% humedad en sustrato
+        # Típico: 40-70% es rango bueno
+        return round(random.uniform(40.0, 70.0), 1)
+    
+    def read_ph(self):
+        """Lee pH2.54-p3 - pH agua de riego"""
+        # Simulado: rango típico 6.0-7.0 para cannabis
+        return round(random.uniform(6.0, 7.0), 2)
+    
     def read_canopy_map(self):
         """Lee 4 RCWL-1601 - distancias desde techo a canopy"""
         # Simulado: 4 distancias en cm
